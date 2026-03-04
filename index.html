@@ -3,269 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólio Interativo | Faça o Gol!</title>
+    <title>SPACE FIGHT | Portfólio Gamificado</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ================= RESET E GERAL ================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { overflow: hidden; background-color: #0f172a; color: white; }
+        :root {
+            --neon-blue: #00f2fe;
+            --neon-red: #ff004c;
+            --neon-green: #39ff14;
+            --bg-dark: #050505;
+        }
 
-        /* ================= TELA DO JOGO ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); overflow: hidden; font-family: 'Rajdhani', sans-serif; color: white; }
+
+        /* ================= UI DO JOGO ================= */
         #game-ui {
-            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
-            text-align: center; z-index: 10; pointer-events: none;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            position: absolute; top: 20px; left: 0; width: 100%;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 100; pointer-events: none;
         }
-        #game-ui h1 { font-size: 2.5rem; color: #fff; animation: pulse 1.5s infinite; }
-        #game-ui p { font-size: 1.2rem; color: #cbd5e1; margin-top: 10px; }
-        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: opacity 1s ease; }
 
-        /* ================= PORTFÓLIO (FIRULAS E ANIMAÇÕES) ================= */
+        .health-container { width: 300px; }
+        .label { font-family: 'Orbitron', sans-serif; margin-bottom: 5px; font-size: 1.2rem; display: flex; justify-content: space-between; }
+        
+        .health-bar-bg { background: rgba(255, 255, 255, 0.1); height: 25px; border: 2px solid white; border-radius: 5px; overflow: hidden; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .health-fill { height: 100%; transition: width 0.3s ease-out; }
+        
+        #player-health { background: linear-gradient(90deg, #00c6ff, var(--neon-blue)); width: 100%; box-shadow: 0 0 20px var(--neon-blue); }
+        #enemy-health { background: linear-gradient(90deg, var(--neon-red), #ff7b00); width: 100%; box-shadow: 0 0 20px var(--neon-red); }
+
+        #instructions {
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            font-family: 'Orbitron'; color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 2px;
+        }
+
+        /* ================= PORTFÓLIO (ESCONDIDO) ================= */
         #portfolio {
-            display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            overflow-y: auto; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            padding: 50px 20px; text-align: center; opacity: 0;
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            z-index: 200; overflow-y: auto; padding: 60px 20px;
+            opacity: 0; transition: opacity 1.5s ease;
         }
-        
-        .header-title { font-size: 4rem; font-weight: bold; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; color: transparent; animation: slideDown 1s ease forwards; }
-        .subtitle { font-size: 1.5rem; color: #94a3b8; margin-bottom: 40px; animation: fadeIn 2s ease forwards; }
 
-        .skills-container { display: flex; justify-content: center; gap: 30px; margin-bottom: 60px; }
+        .container { max-width: 1000px; margin: 0 auto; text-align: center; }
+        
+        h1.glitch {
+            font-family: 'Orbitron', sans-serif; font-size: 4rem; text-transform: uppercase;
+            color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);
+            margin-bottom: 40px; animation: glitch-anim 2s infinite;
+        }
+
+        /* Habilidades */
+        .skills-grid { display: flex; justify-content: center; gap: 40px; margin: 50px 0; }
         .skill-card {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 30px 50px; border-radius: 15px; font-size: 2rem; font-weight: bold;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
-            transition: transform 0.3s, box-shadow 0.3s;
-            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0; transform: translateY(50px);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--neon-blue);
+            padding: 40px; border-radius: 20px; width: 250px;
+            transition: 0.4s; position: relative; overflow: hidden;
         }
-        .skill-card:nth-child(1) { animation-delay: 0.5s; color: #f89820; /* Java Color */ }
-        .skill-card:nth-child(2) { animation-delay: 0.7s; color: #e34c26; /* HTML Color */ }
-        
-        .skill-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 30px currentColor; }
+        .skill-card:hover { transform: translateY(-10px); background: rgba(0, 242, 254, 0.1); box-shadow: 0 0 30px var(--neon-blue); }
+        .skill-card h3 { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 10px; }
+        .skill-card p { color: #aaa; font-size: 1.1rem; }
 
-        .projects-section { max-width: 1000px; margin: 0 auto; text-align: left; }
-        .projects-section h2 { font-size: 2.5rem; border-bottom: 2px solid #4facfe; padding-bottom: 10px; margin-bottom: 30px; color: #e2e8f0; }
-        
-        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .project-card {
-            background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 20px;
-            border-left: 4px solid #4facfe; transition: all 0.3s;
+        /* Projetos */
+        .projects-section { margin-top: 80px; }
+        .project-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .project-item {
+            background: #111; border-radius: 15px; padding: 25px; text-align: left;
+            border-bottom: 4px solid var(--neon-blue); transition: 0.3s;
         }
-        .project-card:hover { background: rgba(0, 0, 0, 0.5); transform: translateX(10px); border-color: #00f2fe; }
-        .project-card h3 { color: #fff; margin-bottom: 10px; }
-        .project-card p { color: #94a3b8; }
+        .project-item:hover { background: #1a1a1a; transform: scale(1.02); }
+        .project-item h4 { font-family: 'Orbitron'; color: var(--neon-blue); margin-bottom: 10px; }
 
-        /* ================= KEYFRAMES (ANIMAÇÕES) ================= */
-        @keyframes pulse { 0% { transform: scale(1); text-shadow: 0 0 10px #4facfe; } 50% { transform: scale(1.05); text-shadow: 0 0 20px #00f2fe; } 100% { transform: scale(1); text-shadow: 0 0 10px #4facfe; } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
-        .show-portfolio { display: block !important; animation: fadeIn 1.5s ease forwards; }
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
 
+        #victory-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 150;
+        }
     </style>
 </head>
 <body>
 
     <div id="game-ui">
-        <h1 id="status-text">⚽ Faça um gol para acessar!</h1>
-        <p>Clique ou toque na tela para mirar e chutar</p>
+        <div class="health-container">
+            <div class="label"><span>VOCÊ</span><span id="p-val">100%</span></div>
+            <div class="health-bar-bg"><div id="player-health" class="health-fill"></div></div>
+        </div>
+        <div class="health-container">
+            <div class="label"><span>OPONENTE</span><span id="e-val">100%</span></div>
+            <div class="health-bar-bg"><div id="enemy-health" class="health-fill"></div></div>
+        </div>
     </div>
 
-    <div id="canvas-container"></div>
+    <div id="instructions">USE [A] [D] PARA MOVER E [ESPAÇO] PARA ATACAR</div>
+
+    <div id="victory-screen">
+        <h2 style="font-family: 'Orbitron'; font-size: 5rem; color: var(--neon-green);">VITÓRIA!</h2>
+        <p style="font-size: 1.5rem;">Acessando portfólio criptografado...</p>
+    </div>
 
     <div id="portfolio">
-        <h1 class="header-title">Bem-vindo ao meu Mundo!</h1>
-        <p class="subtitle">Desenvolvedor Focado, Criativo e Apaixonado por Tecnologia</p>
-
-        <div class="skills-container">
-            <div class="skill-card">☕ Java</div>
-            <div class="skill-card">🌐 HTML5</div>
-        </div>
-
-        <div class="projects-section">
-            <h2>Meus Projetos</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <h3>Projeto 1: Sistema XYZ</h3>
-                    <p>Descrição incrível sobre o projeto que você construiu usando Java no backend.</p>
+        <div class="container">
+            <h1 class="glitch">Desenvolvedor Full Stack</h1>
+            
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <h3>JAVA</h3>
+                    <p>Backend robusto, Spring Boot e lógica escalável.</p>
                 </div>
-                <div class="project-card">
-                    <h3>Projeto 2: Landing Page Interativa</h3>
-                    <p>Uma página web moderna estruturada perfeitamente com HTML semântico.</p>
+                <div class="skill-card">
+                    <h3>HTML5</h3>
+                    <p>Estrutura semântica, acessibilidade e SEO.</p>
                 </div>
-                <div class="project-card">
-                    <h3>Projeto 3: Espaço Aberto</h3>
-                    <p>Substitua este texto pelos seus projetos reais que vão garantir a sua vaga!</p>
+            </div>
+
+            <div class="projects-section">
+                <h2 style="font-family:'Orbitron'; font-size: 2.5rem;">MEUS PROJETOS</h2>
+                <div class="project-list">
+                    <div class="project-item">
+                        <h4>Sistema de Gestão Sideral</h4>
+                        <p>CRUD completo feito em Java com banco de dados MySQL.</p>
+                    </div>
+                    <div class="project-item">
+                        <h4>Interface Quantum</h4>
+                        <p>Layout responsivo utilizando as últimas técnicas de CSS e HTML5.</p>
+                    </div>
+                    <div class="project-item">
+                        <h4>Game Engine 3D</h4>
+                        <p>Experiência interativa desenvolvida com JavaScript e Three.js.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="canvas-container"></div>
+
     <script>
-        // Configuração Básica do Three.js
+        // CONFIGURAÇÕES INICIAIS
+        let pHealth = 100, eHealth = 100, gameOver = false;
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB); // Céu azul
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        document.body.appendChild(renderer.domElement);
 
-        // Iluminação
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(5, 10, 5);
-        scene.add(dirLight);
+        // ESPAÇO (STARS)
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 5000;
+        const posArray = new Float32Array(starCount * 3);
+        for(let i=0; i < starCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
 
-        // Campo de Futebol (Grama)
-        const fieldGeo = new THREE.PlaneGeometry(30, 40);
-        const fieldMat = new THREE.MeshLambertMaterial({ color: 0x228B22 });
-        const field = new THREE.Mesh(fieldGeo, fieldMat);
-        field.rotation.x = -Math.PI / 2;
-        scene.add(field);
+        // RINGUE (PRETO COM CORDAS VERMELHAS)
+        const ringFloorGeo = new THREE.BoxGeometry(20, 0.5, 20);
+        const ringFloorMat = new THREE.MeshPhongMaterial({ color: 0x0a0a0a });
+        const ringFloor = new THREE.Mesh(ringFloorGeo, ringFloorMat);
+        scene.add(ringFloor);
 
-        // Linha do Gol
-        const lineGeo = new THREE.PlaneGeometry(10, 0.2);
-        const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const line = new THREE.Mesh(lineGeo, lineMat);
-        line.rotation.x = -Math.PI / 2;
-        line.position.set(0, 0.01, -15);
-        scene.add(line);
+        // CORDAS VERMELHAS
+        function createRope(y) {
+            const ropeGeo = new THREE.TorusGeometry(10, 0.05, 16, 4);
+            const ropeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const rope = new THREE.Line(ropeGeo, ropeMat);
+            rope.rotation.x = Math.PI/2;
+            rope.position.y = y;
+            scene.add(rope);
+        }
+        createRope(1); createRope(2); createRope(3);
 
-        // Traves do Gol
-        const postGeo = new THREE.CylinderGeometry(0.2, 0.2, 4);
-        const postMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-        const leftPost = new THREE.Mesh(postGeo, postMat);
-        leftPost.position.set(-5, 2, -15);
-        const rightPost = new THREE.Mesh(postGeo, postMat);
-        rightPost.position.set(5, 2, -15);
-        const topPostGeo = new THREE.CylinderGeometry(0.2, 0.2, 10.4);
-        const topPost = new THREE.Mesh(topPostGeo, postMat);
-        topPost.rotation.z = Math.PI / 2;
-        topPost.position.set(0, 4, -15);
-        scene.add(leftPost); scene.add(rightPost); scene.add(topPost);
-
-        // Goleiro (Cubo vermelho)
-        const gkGeo = new THREE.BoxGeometry(2, 3, 1);
-        const gkMat = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-        const gk = new THREE.Mesh(gkGeo, gkMat);
-        gk.position.set(0, 1.5, -14);
-        scene.add(gk);
-
-        // Bola de Futebol
-        const ballGeo = new THREE.SphereGeometry(0.5, 32, 32);
-        const ballMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-        const ball = new THREE.Mesh(ballGeo, ballMat);
-        ball.position.set(0, 0.5, 10);
-        scene.add(ball);
-
-        // Posição da Câmera
-        camera.position.set(0, 5, 18);
-        camera.lookAt(0, 0, -15);
-
-        // Lógica do Jogo
-        let isKicked = false;
-        let targetX = 0;
-        let gameWon = false;
-        const clock = new THREE.Clock();
-
-        // Chutar a bola ao clicar
-        window.addEventListener('click', (event) => {
-            if (!isKicked && !gameWon) {
-                // Calcula a direção X do chute baseado onde o usuário clicou na tela
-                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                targetX = mouseX * 8; // Mapeia para a largura do gol
-                isKicked = true;
-            }
-        });
-
-        // Responsividade
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        });
-
-        function resetBall() {
-            setTimeout(() => {
-                ball.position.set(0, 0.5, 10);
-                isKicked = false;
-                document.getElementById('status-text').innerText = "DEFESA! Tente novamente!";
-                document.getElementById('status-text').style.color = "#ff4444";
-            }, 500);
+        // PLATEIA (PARTÍCULAS BRILHANTES)
+        const audienceCount = 200;
+        for(let i=0; i<audienceCount; i++) {
+            const audGeo = new THREE.SphereGeometry(0.1, 8, 8);
+            const audMat = new THREE.MeshBasicMaterial({ color: Math.random() > 0.5 ? 0x00f2fe : 0xff004c });
+            const person = new THREE.Mesh(audGeo, audMat);
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 15 + Math.random() * 5;
+            person.position.set(Math.cos(angle)*dist, Math.random()*5, Math.sin(angle)*dist);
+            scene.add(person);
         }
 
-        function triggerGoal() {
-            gameWon = true;
-            document.getElementById('status-text').innerText = "GOOOOOOOL!!!";
-            document.getElementById('status-text').style.color = "#00ff00";
+        // BONECOS DE PALITO (STICKMEN)
+        function createStickman(color) {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshBasicMaterial({ color: color });
             
-            setTimeout(() => {
-                // Esconde o jogo
-                document.getElementById('canvas-container').style.opacity = '0';
-                document.getElementById('game-ui').style.opacity = '0';
-                
-                // Mostra o portfólio depois do fade out
-                setTimeout(() => {
-                    document.getElementById('canvas-container').style.display = 'none';
-                    document.getElementById('game-ui').style.display = 'none';
-                    
-                    const port = document.getElementById('portfolio');
-                    port.classList.add('show-portfolio');
-                    document.body.style.overflow = 'auto'; // Volta a rolagem da página
-                }, 1000);
-            }, 1500);
+            // Cabeça
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), mat);
+            head.position.y = 3.5; group.add(head);
+            
+            // Corpo
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5), mat);
+            body.position.y = 2.5; group.add(body);
+            
+            // Braços
+            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
+            arm.rotation.z = Math.PI/2; arm.position.y = 3; group.add(arm);
+            
+            // Pernas
+            const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
+            legL.position.set(-0.3, 1.5, 0); legL.rotation.z = 0.2; group.add(legL);
+            const legR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
+            legR.position.set(0.3, 1.5, 0); legR.rotation.z = -0.2; group.add(legR);
+
+            return group;
         }
 
-        // Loop de Animação
+        const player = createStickman(0x00f2fe); player.position.x = -5; scene.add(player);
+        const enemy = createStickman(0xff004c); enemy.position.x = 5; enemy.rotation.y = Math.PI; scene.add(enemy);
+
+        // LUZES
+        const light = new THREE.PointLight(0xffffff, 1, 100); light.position.set(0, 10, 0); scene.add(light);
+        const ambLight = new THREE.AmbientLight(0x404040); scene.add(ambLight);
+
+        camera.position.set(0, 6, 15);
+        camera.lookAt(0, 2, 0);
+
+        // LÓGICA DE MOVIMENTO
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function updateGame() {
+            if(gameOver) return;
+
+            // Player move
+            if (keys['KeyA'] && player.position.x > -8) player.position.x -= 0.15;
+            if (keys['KeyD'] && player.position.x < 8) player.position.x += 0.15;
+
+            // IA simples inimigo
+            if (enemy.position.x > player.position.x + 2.5) enemy.position.x -= 0.08;
+            else if (enemy.position.x < player.position.x - 2.5) enemy.position.x += 0.08;
+
+            // Ataque Player
+            if (keys['Space']) {
+                player.rotation.z = -0.5; // Animação de ataque
+                if (Math.abs(player.position.x - enemy.position.x) < 2.5) {
+                    eHealth -= 0.5;
+                    enemy.position.x += 0.2; // Knockback
+                    updateUI();
+                }
+            } else { player.rotation.z = 0; }
+
+            // Ataque Inimigo (Aleatório)
+            if (Math.abs(player.position.x - enemy.position.x) < 2.5 && Math.random() < 0.05) {
+                pHealth -= 1;
+                player.position.x -= 0.2;
+                updateUI();
+            }
+
+            if (eHealth <= 0) winGame();
+            if (pHealth <= 0) pHealth = 100; // Imortal para facilitar o teste
+        }
+
+        function updateUI() {
+            document.getElementById('player-health').style.width = pHealth + '%';
+            document.getElementById('enemy-health').style.width = eHealth + '%';
+            document.getElementById('p-val').innerText = Math.ceil(pHealth) + '%';
+            document.getElementById('e-val').innerText = Math.ceil(eHealth) + '%';
+        }
+
+        function winGame() {
+            gameOver = true;
+            document.getElementById('victory-screen').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('victory-screen').style.opacity = '0';
+                document.getElementById('portfolio').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('portfolio').style.opacity = '1';
+                }, 100);
+            }, 2000);
+        }
+
         function animate() {
             requestAnimationFrame(animate);
-
-            if (!gameWon) {
-                const elapsedTime = clock.getElapsedTime();
-                
-                // Movimento do Goleiro (Vai e vem)
-                gk.position.x = Math.sin(elapsedTime * 2) * 4;
-
-                // Lógica da Bola se chutada
-                if (isKicked) {
-                    ball.position.z -= 0.6; // Velocidade para frente
-                    
-                    // Movimento lateral em direção ao alvo clicado
-                    if (Math.abs(ball.position.x - targetX) > 0.1) {
-                        ball.position.x += (targetX > ball.position.x) ? 0.1 : -0.1;
-                    }
-                    
-                    // Rotação da bola para efeito visual
-                    ball.rotation.x -= 0.1;
-
-                    // Colisão com o Goleiro
-                    if (ball.position.z <= gk.position.z + 1 && ball.position.z >= gk.position.z - 1) {
-                        if (Math.abs(ball.position.x - gk.position.x) < 1.5) { // Goleiro defendeu
-                            isKicked = false;
-                            resetBall();
-                        }
-                    }
-
-                    // Verifica se passou da linha do Gol
-                    if (ball.position.z < -15 && isKicked) {
-                        isKicked = false; // Para a bola
-                        if (ball.position.x > -4.5 && ball.position.x < 4.5) {
-                            triggerGoal(); // Gol válido!
-                        } else {
-                            // Chutou pra fora
-                            document.getElementById('status-text').innerText = "PRA FORA! Tente de novo!";
-                            document.getElementById('status-text').style.color = "#ffaa00";
-                            resetBall();
-                        }
-                    }
-                }
-            }
-
+            updateGame();
+            stars.rotation.y += 0.001;
             renderer.render(scene, camera);
         }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
         animate();
     </script>
