@@ -2,240 +2,356 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MUAY THAI PRO | Portfólio Arena</title>
+    <title>JAVA FIGHTER II - TURBO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-blue: #00f2fe; --neon-red: #ff004c; }
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Oswald', sans-serif; }
-        
-        /* UI DO JOGO */
-        #ui { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 10; pointer-events: none; }
-        .bar-container { width: 350px; text-align: center; }
-        .hp-bg { background: rgba(0,0,0,0.7); height: 30px; border: 3px solid #fff; border-radius: 5px; position: relative; }
-        .hp-fill { height: 100%; width: 100%; transition: width 0.2s; }
-        #p-fill { background: linear-gradient(90deg, #004e92, var(--neon-blue)); }
-        #e-fill { background: linear-gradient(90deg, #8e0e00, var(--neon-red)); }
-        .status-tag { color: white; font-weight: bold; font-size: 1.5rem; text-shadow: 2px 2px #000; margin-bottom: 5px; }
+        :root { --gold: #ffd700; --retro-blue: #00008b; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Press Start 2P', cursive; color: white; }
 
-        #controls { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #aaa; font-size: 1rem; letter-spacing: 1px; }
+        /* TELAS DO SISTEMA */
+        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: rgba(0,0,0,0.85); text-align: center; }
+        .active { display: flex; }
+
+        /* TELA INICIAL */
+        #start-screen { background: linear-gradient(to bottom, #1a1a1a, #000); border: 10px double #444; }
+        .title-logo { font-size: 50px; color: #ff4500; text-shadow: 5px 5px #000, 8px 8px var(--gold); margin-bottom: 50px; }
+        .btn-arcade { padding: 20px 40px; border: 4px solid white; background: var(--retro-blue); color: white; cursor: pointer; font-family: inherit; font-size: 15px; transition: 0.2s; }
+        .btn-arcade:hover { background: #ff4500; transform: scale(1.1); }
+
+        /* SELEÇÃO DE PERSONAGENS */
+        .char-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+        .char-card { border: 4px solid #555; padding: 15px; cursor: pointer; transition: 0.3s; width: 180px; }
+        .char-card:hover, .char-card.selected { border-color: var(--gold); background: rgba(255,215,0,0.2); transform: translateY(-10px); }
+        .char-card img { width: 100px; height: 100px; background: #333; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;}
+
+        /* SELEÇÃO DE ARENA */
+        .arena-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
+        .arena-card { border: 4px solid #555; padding: 10px; cursor: pointer; width: 250px; }
+        .arena-card:hover { border-color: #00ff00; }
+
+        /* HUD DE LUTA */
+        #hud { position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 30px; z-index: 5; pointer-events: none; }
+        .health-box { width: 40%; }
+        .bar-bg { height: 30px; background: #555; border: 3px solid #fff; position: relative; }
+        .bar-fill { height: 100%; width: 100%; transition: width 0.3s; }
+        #hp-p1 { background: #00ff00; }
+        #hp-p2 { background: #ff0000; }
+        #round-info { font-size: 20px; color: var(--gold); }
+
+        /* K.O. OVERLAY */
+        #ko-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: red; display: none; z-index: 20; -webkit-text-stroke: 3px white; }
 
         /* PORTFÓLIO */
-        #portfolio { 
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: #0f172a; z-index: 100; overflow-y: auto; color: white; padding: 50px;
-        }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 40px auto; }
-        .card { background: #1e293b; padding: 30px; border-radius: 10px; border-left: 5px solid var(--neon-blue); }
-        .skill { font-size: 3rem; color: var(--neon-blue); margin: 20px 0; }
-        h1 { font-size: 4rem; text-align: center; }
+        #portfolio { background: #0f172a; padding: 50px; overflow-y: auto; text-align: left;}
+        .skill-tag { color: #00f2fe; font-size: 2rem; margin: 15px 0; }
+        .proj-card { background: #1e293b; padding: 20px; border-radius: 8px; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-    <div id="ui">
-        <div class="bar-container">
-            <div class="status-tag">LUTADOR PRO <span id="p-block"></span></div>
-            <div class="hp-bg"><div id="p-fill" class="hp-fill"></div></div>
+    <div id="start-screen" class="screen active">
+        <h1 class="title-logo">JAVA FIGHTER II</h1>
+        <button class="btn-arcade" onclick="showScreen('select-screen')">INSERT COIN (START)</button>
+    </div>
+
+    <div id="select-screen" class="screen">
+        <h2>SELECT YOUR FIGHTER</h2>
+        <div class="char-grid" id="char-grid"></div>
+        <p style="margin-top:20px; font-size: 10px;">ADVERSÁRIO SERÁ ESCOLHIDO ALEATORIAMENTE</p>
+    </div>
+
+    <div id="arena-screen" class="screen">
+        <h2>SELECT STAGE</h2>
+        <div class="arena-grid" id="arena-grid"></div>
+        <button class="btn-arcade" style="margin-top: 30px;" onclick="randomArena()">🎲 ALEATÓRIO</button>
+    </div>
+
+    <div id="hud" style="display: none;">
+        <div class="health-box">
+            <div id="name-p1">PLAYER</div>
+            <div class="bar-bg"><div id="hp-p1" class="bar-fill"></div></div>
         </div>
-        <div class="bar-container">
-            <div class="status-tag">OPONENTE <span id="e-block"></span></div>
-            <div class="hp-bg"><div id="e-fill" class="hp-fill"></div></div>
+        <div id="round-info">ROUND 1</div>
+        <div class="health-box">
+            <div id="name-p2" style="text-align: right;">CPU</div>
+            <div class="bar-bg"><div id="hp-p2" class="bar-fill" style="float: right;"></div></div>
         </div>
     </div>
 
-    <div id="controls">
-        [A][D] MOVER | [J] SOCO (10) | [K] CHUTE (15) | [S] BLOQUEIO (DEFESA TOTAL)
+    <div id="ko-text">K.O.</div>
+
+    <div id="result-screen" class="screen">
+        <h1 id="result-title">DEFEAT</h1>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn-arcade" onclick="restartMatch()">REVANCHE</button>
+            <button class="btn-arcade" onclick="showScreen('select-screen')">MUDAR PERSONAGEM</button>
+            <button class="btn-arcade" onclick="location.reload()">SAIR</button>
+        </div>
+        <button id="view-portfolio-btn" class="btn-arcade" style="margin-top: 20px; display: none; background: #00ff00;" onclick="showPortfolio()">ACESSAR PORTFÓLIO</button>
     </div>
 
-    <div id="portfolio">
-        <h1>MEU PORTFÓLIO NOTÁVEL</h1>
-        <div class="grid">
-            <div class="card">
-                <h2>HABILIDADES</h2>
-                <div class="skill">JAVA</div>
-                <p>Especialista em lógica de backend, Spring Boot e microserviços robustos.</p>
-                <div class="skill">HTML5</div>
-                <p>Criação de interfaces semânticas, acessíveis e otimizadas.</p>
-            </div>
-            <div class="card">
-                <h2>MEUS PROJETOS</h2>
-                <ul>
-                    <li><h3>E-commerce Engine</h3> Sistema completo em Java.</li>
-                    <li><h3>Dashboard Real-time</h3> Interface HTML/JS de alta performance.</li>
-                    <li><h3>Muay Thai VR</h3> Este simulador que você acabou de ver.</li>
-                </ul>
-            </div>
+    <div id="portfolio" class="screen">
+        <h1>NOTABLE PORTFOLIO</h1>
+        <div style="max-width: 800px;">
+            <h2 class="skill-tag">EXPERTISE: JAVA</h2>
+            <p>Desenvolvimento de sistemas escaláveis e lógica de games 3D.</p>
+            <h2 class="skill-tag">EXPERTISE: HTML/CSS</h2>
+            <p>Interfaces imersivas e experiências web de alta performance.</p>
+            <h2 style="margin-top: 40px;">MEUS PROJETOS</h2>
+            <div class="proj-card"><h3>Fighting Engine 3.0</h3><p>O motor Three.js que alimenta esta luta.</p></div>
+            <div class="proj-card"><h3>API Sideral</h3><p>Backend em Java para controle de dados em tempo real.</p></div>
         </div>
+        <button class="btn-arcade" style="margin-top: 30px;" onclick="location.reload()">VOLTAR AO MENU</button>
     </div>
 
     <script>
-        // CENÁRIO E CAMERA
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x111111);
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        // CONFIGURAÇÕES GERAIS
+        let scene, camera, renderer, p1, p2, arena;
+        let p1HP = 100, p2HP = 100, roundsP1 = 0, roundsP2 = 0, currentRound = 1;
+        let selectedChar = null, enemyChar = null, selectedArena = null;
+        let gameState = 'MENU';
+        const clock = new THREE.Clock();
 
-        // LUZES DE ESTÁDIO
-        const light1 = new THREE.SpotLight(0xffffff, 1); light1.position.set(0, 20, 0); scene.add(light1);
-        const ambLight = new THREE.AmbientLight(0x404040, 2); scene.add(ambLight);
+        const characters = [
+            { id: 0, name: 'NOVA', color: 0x00f2fe, power: 'Luz', speed: 0.15 },
+            { id: 1, name: 'BLAZE', color: 0xff4500, power: 'Fogo', speed: 0.12 },
+            { id: 2, name: 'GOLIATH', color: 0x00ff00, power: 'Terra', speed: 0.08 },
+            { id: 3, name: 'SHADOW', color: 0x8a2be2, power: 'Trevas', speed: 0.18 },
+            { id: 4, name: 'SPARK', color: 0xffff00, power: 'Raio', speed: 0.20 },
+            { id: 5, name: 'TIDAL', color: 0x1e90ff, power: 'Água', speed: 0.13 }
+        ];
 
-        // CRIAR ESTÁDIO E ARQUIBANCADA
-        function createStadium() {
-            const stepGeo = new THREE.BoxGeometry(60, 1, 2);
-            const stepMat = new THREE.MeshPhongMaterial({ color: 0x222222 });
-            for(let i=0; i<10; i++) {
-                const step = new THREE.Mesh(stepGeo, stepMat);
-                step.position.set(0, i * 0.8, -15 - (i * 1.5));
-                scene.add(step);
-                // Adicionar Plateia no degrau
-                for(let j=-25; j<25; j+=3) {
-                    createAudience(j + Math.random(), i * 0.8 + 1, -15 - (i * 1.5));
-                }
-            }
+        const arenas = [
+            { id: 0, name: 'DOJO CLÁSSICO', color: 0x8b4513 },
+            { id: 1, name: 'NEON CITY', color: 0x111111 },
+            { id: 2, name: 'SKY TEMPLE', color: 0x87ceeb },
+            { id: 3, name: 'VOLCANO', color: 0x440000 }
+        ];
+
+        // INICIALIZAÇÃO DA INTERFACE
+        function initUI() {
+            const grid = document.getElementById('char-grid');
+            characters.forEach(char => {
+                const div = document.createElement('div');
+                div.className = 'char-card';
+                div.innerHTML = `<div style="width:100%;height:100px;background:#${char.color.toString(16)}"></div><p>${char.name}</p>`;
+                div.onclick = () => selectCharacter(char);
+                grid.appendChild(div);
+            });
+
+            const aGrid = document.getElementById('arena-grid');
+            arenas.forEach(a => {
+                const div = document.createElement('div');
+                div.className = 'arena-card';
+                div.innerText = a.name;
+                div.onclick = () => selectArena(a);
+                aGrid.appendChild(div);
+            });
         }
 
-        function createAudience(x, y, z) {
-            const group = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1, 0.5), new THREE.MeshLambertMaterial({color: 0x333333}));
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), new THREE.MeshLambertMaterial({color: 0xffdbac}));
-            // Rosto simples
-            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), new THREE.MeshBasicMaterial({color: 0x000}));
-            eye.position.set(0.15, 0.1, 0.35); head.add(eye);
-            head.position.y = 0.8;
-            group.add(body); group.add(head);
-            group.position.set(x, y, z);
-            scene.add(group);
-        }
-        createStadium();
-
-        // OCTÓGONO (UFC)
-        const ringGeo = new THREE.CylinderGeometry(12, 12, 0.5, 8);
-        const ringMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        scene.add(ring);
-        // Cordas Vermelhas
-        const ropeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        for(let i=1; i<=3; i++) {
-            const rope = new THREE.Mesh(new THREE.TorusGeometry(12, 0.05, 8, 8), ropeMat);
-            rope.rotation.x = Math.PI/2; rope.position.y = i; scene.add(rope);
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        // BONECO MUAY THAI
-        function createFighter(color) {
+        function selectCharacter(char) {
+            selectedChar = char;
+            enemyChar = characters[Math.floor(Math.random() * characters.length)];
+            showScreen('arena-screen');
+        }
+
+        function selectArena(a) {
+            selectedArena = a;
+            startFight();
+        }
+
+        function randomArena() {
+            selectArena(arenas[Math.floor(Math.random() * arenas.length)]);
+        }
+
+        // MOTOR 3D
+        function startFight() {
+            showScreen('none');
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('name-p1').innerText = selectedChar.name;
+            document.getElementById('name-p2').innerText = enemyChar.name;
+            
+            gameState = 'FIGHT';
+            init3D();
+        }
+
+        function init3D() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(selectedArena.color);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Ringue
+            const floorGeo = new THREE.BoxGeometry(30, 1, 10);
+            const floorMat = new THREE.MeshPhongMaterial({ color: 0x222222 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            scene.add(floor);
+
+            const amb = new THREE.AmbientLight(0xffffff, 0.8); scene.add(amb);
+            const dir = new THREE.DirectionalLight(0xffffff, 1); dir.position.set(0, 10, 5); scene.add(dir);
+
+            p1 = createFighter(selectedChar.color, -5);
+            p2 = createFighter(enemyChar.color, 5);
+            p2.group.rotation.y = Math.PI;
+
+            camera.position.set(0, 5, 15);
+            camera.lookAt(0, 2, 0);
+
+            requestAnimationFrame(animate);
+        }
+
+        function createFighter(color, x) {
             const group = new THREE.Group();
             const mat = new THREE.MeshPhongMaterial({ color: color });
+            const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 2, 4, 8), mat);
+            body.position.y = 2;
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), new THREE.MeshPhongMaterial({color: 0xffdbac}));
+            head.position.y = 3.5;
             
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshPhongMaterial({color: 0xffdbac}));
-            head.position.y = 4;
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.8), mat);
-            body.position.y = 2.8;
+            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 0.2), mat); armL.position.set(-0.7, 3, 0.3);
+            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 0.2), mat); armR.position.set(0.7, 3, 0.3);
             
-            // Membros (Articulados)
-            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.15), mat);
-            armL.position.set(-0.5, 3.2, 0.3); armL.rotation.x = -0.5; // Guarda de Muay Thai
-            
-            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.15), mat);
-            armR.position.set(0.5, 3.2, 0.3); armR.rotation.x = -0.5;
-
-            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 0.2), mat);
-            legL.position.set(-0.4, 1, 0);
-
-            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 0.2), mat);
-            legR.position.set(0.4, 1, 0);
-
-            group.add(head, body, armL, armR, legL, legR);
-            return { group, armL, armR, legL, legR, head };
+            group.add(body, head, armL, armR);
+            group.position.x = x;
+            scene.add(group);
+            return { group, armL, armR, body, head, velocityY: 0, isJumping: false };
         }
 
-        const player = createFighter(0x00f2fe); player.group.position.x = -4; scene.add(player.group);
-        const enemy = createFighter(0xff004c); enemy.group.position.x = 4; enemy.group.rotation.y = Math.PI; scene.add(enemy.group);
-
-        camera.position.set(0, 8, 20);
-        camera.lookAt(0, 2, 0);
-
-        // LÓGICA DO JOGO
-        let pHP = 100, eHP = 100, isPBlocking = false, isEBlocking = false;
+        // LÓGICA DE MOVIMENTO E LUTA
         const keys = {};
         window.onkeydown = e => keys[e.code] = true;
         window.onkeyup = e => keys[e.code] = false;
 
-        function animateFighter(fighter, type) {
-            if(type === 'punch') {
-                fighter.armR.position.z = 2;
-                setTimeout(() => fighter.armR.position.z = 0.3, 100);
-            }
-            if(type === 'kick') {
-                fighter.legR.rotation.x = -1.2;
-                fighter.legR.position.z = 1;
-                setTimeout(() => { fighter.legR.rotation.x = 0; fighter.legR.position.z = 0; }, 150);
-            }
-            if(type === 'block') {
-                fighter.armL.rotation.x = -1.5; fighter.armR.rotation.x = -1.5;
-                fighter.armL.position.y = 3.8; fighter.armR.position.y = 3.8;
-            } else {
-                fighter.armL.rotation.x = -0.5; fighter.armR.rotation.x = -0.5;
-                fighter.armL.position.y = 3.2; fighter.armR.position.y = 3.2;
-            }
-        }
+        function animate() {
+            if(gameState !== 'FIGHT' && gameState !== 'K.O.') return;
+            requestAnimationFrame(animate);
 
-        function gameLoop() {
-            if(eHP <= 0) { 
-                document.getElementById('portfolio').style.display = 'block'; 
-                return; 
-            }
+            if(gameState === 'FIGHT') {
+                // Movimento P1
+                if(keys['KeyA'] && p1.group.position.x > -14) p1.group.position.x -= selectedChar.speed;
+                if(keys['KeyD'] && p1.group.position.x < 14) p1.group.position.x += selectedChar.speed;
+                
+                // Pulo
+                if(keys['KeyW'] && !p1.isJumping) { p1.velocityY = 0.3; p1.isJumping = true; }
+                p1.group.position.y += p1.velocityY;
+                if(p1.isJumping) { p1.velocityY -= 0.015; if(p1.group.position.y <= 0) { p1.group.position.y = 0; p1.isJumping = false; } }
 
-            // Controles Jogador
-            isPBlocking = keys['KeyS'] || keys['ArrowDown'];
-            document.getElementById('p-block').innerText = isPBlocking ? "(BLOQUEANDO)" : "";
-            animateFighter(player, isPBlocking ? 'block' : 'idle');
+                // Ataques
+                if(keys['KeyJ']) { punch(p1, p2, 10); keys['KeyJ'] = false; }
+                if(keys['KeyK']) { kick(p1, p2, 20); keys['KeyK'] = false; }
+                if(keys['KeyL']) { special(p1, p2); keys['KeyL'] = false; }
 
-            if(keys['KeyA']) player.group.position.x -= 0.1;
-            if(keys['KeyD']) player.group.position.x += 0.1;
-
-            // Ataques (J = Soco, K = Chute)
-            if(keys['KeyJ']) {
-                animateFighter(player, 'punch');
-                checkHit(player, enemy, 10, 2.5);
-                keys['KeyJ'] = false;
-            }
-            if(keys['KeyK']) {
-                animateFighter(player, 'kick');
-                checkHit(player, enemy, 15, 3.5);
-                keys['KeyK'] = false;
-            }
-
-            // IA Simples
-            if(enemy.group.position.x > player.group.position.x + 3) enemy.group.position.x -= 0.05;
-            else if (Math.random() < 0.02) {
-                animateFighter(enemy, 'punch');
-                checkHit(enemy, player, 8, 2.5);
+                // IA Inimigo básica
+                if(p2.group.position.x > p1.group.position.x + 3) p2.group.position.x -= 0.05;
+                else if(Math.random() < 0.01) punch(p2, p1, 8);
             }
 
             renderer.render(scene, camera);
-            requestAnimationFrame(gameLoop);
+        }
+
+        function punch(attacker, target, damage) {
+            attacker.armR.position.z = 1.5;
+            setTimeout(() => attacker.armR.position.z = 0.3, 100);
+            checkHit(attacker, target, damage, 2.5);
+        }
+
+        function kick(attacker, target, damage) {
+            attacker.group.rotation.z = attacker.group.position.x < target.group.position.x ? 0.5 : -0.5;
+            setTimeout(() => attacker.group.rotation.z = 0, 200);
+            checkHit(attacker, target, damage, 3.5);
+        }
+
+        function special(attacker, target) {
+            // Firula visual de poder
+            const light = new THREE.PointLight(attacker.body.material.color, 10, 10);
+            light.position.copy(attacker.group.position);
+            scene.add(light);
+            setTimeout(() => scene.remove(light), 300);
+            checkHit(attacker, target, 35, 5);
         }
 
         function checkHit(attacker, target, damage, range) {
             const dist = Math.abs(attacker.group.position.x - target.group.position.x);
             if(dist < range) {
-                const isBlocked = (target === player) ? isPBlocking : isEBlocking;
-                if(!isBlocked) {
-                    if(target === enemy) eHP -= damage;
-                    else pHP -= damage;
-                    updateUI();
-                }
+                // Bloqueio
+                if(target === p1 && (keys['KeyS'])) damage *= 0.1;
+                
+                if(target === p1) p1HP -= damage;
+                else p2HP -= damage;
+                updateHUD();
+                
+                if(p1HP <= 0 || p2HP <= 0) finishRound();
             }
         }
 
-        function updateUI() {
-            document.getElementById('e-fill').style.width = eHP + "%";
-            document.getElementById('p-fill').style.width = pHP + "%";
+        function updateHUD() {
+            document.getElementById('hp-p1').style.width = Math.max(0, p1HP) + "%";
+            document.getElementById('hp-p2').style.width = Math.max(0, p2HP) + "%";
         }
 
-        gameLoop();
+        function finishRound() {
+            gameState = 'K.O.';
+            const ko = document.getElementById('ko-text');
+            ko.style.display = 'block';
+            
+            if(p1HP <= 0) roundsP2++; else roundsP1++;
+
+            // Animação de Dança
+            const winner = p1HP > 0 ? p1 : p2;
+            winner.group.position.y = 1; // Pulo da vitória
+
+            setTimeout(() => {
+                ko.style.display = 'none';
+                if(roundsP1 === 2 || roundsP2 === 2) {
+                    showEndGame();
+                } else {
+                    currentRound++;
+                    resetRound();
+                }
+            }, 2000);
+        }
+
+        function resetRound() {
+            p1HP = 100; p2HP = 100;
+            p1.group.position.set(-5, 0, 0);
+            p2.group.position.set(5, 0, 0);
+            document.getElementById('round-info').innerText = "ROUND " + currentRound;
+            updateHUD();
+            gameState = 'FIGHT';
+        }
+
+        function showEndGame() {
+            gameState = 'RESULT';
+            showScreen('result-screen');
+            if(roundsP1 > roundsP2) {
+                document.getElementById('result-title').innerText = "VICTORY!";
+                document.getElementById('result-title').style.color = "#00ff00";
+                document.getElementById('view-portfolio-btn').style.display = 'block';
+            } else {
+                document.getElementById('result-title').innerText = "DEFEAT";
+                document.getElementById('result-title').style.color = "red";
+            }
+        }
+
+        function restartMatch() {
+            roundsP1 = 0; roundsP2 = 0; currentRound = 1;
+            resetRound();
+            showScreen('none');
+        }
+
+        function showPortfolio() {
+            showScreen('portfolio');
+        }
+
+        initUI();
     </script>
 </body>
 </html>
