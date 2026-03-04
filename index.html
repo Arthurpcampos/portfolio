@@ -2,307 +2,240 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPACE FIGHT | Portfólio Gamificado</title>
+    <title>MUAY THAI PRO | Portfólio Arena</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --neon-blue: #00f2fe;
-            --neon-red: #ff004c;
-            --neon-green: #39ff14;
-            --bg-dark: #050505;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-dark); overflow: hidden; font-family: 'Rajdhani', sans-serif; color: white; }
-
-        /* ================= UI DO JOGO ================= */
-        #game-ui {
-            position: absolute; top: 20px; left: 0; width: 100%;
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 100; pointer-events: none;
-        }
-
-        .health-container { width: 300px; }
-        .label { font-family: 'Orbitron', sans-serif; margin-bottom: 5px; font-size: 1.2rem; display: flex; justify-content: space-between; }
+        :root { --neon-blue: #00f2fe; --neon-red: #ff004c; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Oswald', sans-serif; }
         
-        .health-bar-bg { background: rgba(255, 255, 255, 0.1); height: 25px; border: 2px solid white; border-radius: 5px; overflow: hidden; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .health-fill { height: 100%; transition: width 0.3s ease-out; }
-        
-        #player-health { background: linear-gradient(90deg, #00c6ff, var(--neon-blue)); width: 100%; box-shadow: 0 0 20px var(--neon-blue); }
-        #enemy-health { background: linear-gradient(90deg, var(--neon-red), #ff7b00); width: 100%; box-shadow: 0 0 20px var(--neon-red); }
+        /* UI DO JOGO */
+        #ui { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 10; pointer-events: none; }
+        .bar-container { width: 350px; text-align: center; }
+        .hp-bg { background: rgba(0,0,0,0.7); height: 30px; border: 3px solid #fff; border-radius: 5px; position: relative; }
+        .hp-fill { height: 100%; width: 100%; transition: width 0.2s; }
+        #p-fill { background: linear-gradient(90deg, #004e92, var(--neon-blue)); }
+        #e-fill { background: linear-gradient(90deg, #8e0e00, var(--neon-red)); }
+        .status-tag { color: white; font-weight: bold; font-size: 1.5rem; text-shadow: 2px 2px #000; margin-bottom: 5px; }
 
-        #instructions {
-            position: absolute; bottom: 20px; width: 100%; text-align: center;
-            font-family: 'Orbitron'; color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 2px;
-        }
+        #controls { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #aaa; font-size: 1rem; letter-spacing: 1px; }
 
-        /* ================= PORTFÓLIO (ESCONDIDO) ================= */
-        #portfolio {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            z-index: 200; overflow-y: auto; padding: 60px 20px;
-            opacity: 0; transition: opacity 1.5s ease;
+        /* PORTFÓLIO */
+        #portfolio { 
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
+            background: #0f172a; z-index: 100; overflow-y: auto; color: white; padding: 50px;
         }
-
-        .container { max-width: 1000px; margin: 0 auto; text-align: center; }
-        
-        h1.glitch {
-            font-family: 'Orbitron', sans-serif; font-size: 4rem; text-transform: uppercase;
-            color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);
-            margin-bottom: 40px; animation: glitch-anim 2s infinite;
-        }
-
-        /* Habilidades */
-        .skills-grid { display: flex; justify-content: center; gap: 40px; margin: 50px 0; }
-        .skill-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--neon-blue);
-            padding: 40px; border-radius: 20px; width: 250px;
-            transition: 0.4s; position: relative; overflow: hidden;
-        }
-        .skill-card:hover { transform: translateY(-10px); background: rgba(0, 242, 254, 0.1); box-shadow: 0 0 30px var(--neon-blue); }
-        .skill-card h3 { font-family: 'Orbitron'; font-size: 1.8rem; margin-bottom: 10px; }
-        .skill-card p { color: #aaa; font-size: 1.1rem; }
-
-        /* Projetos */
-        .projects-section { margin-top: 80px; }
-        .project-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
-        .project-item {
-            background: #111; border-radius: 15px; padding: 25px; text-align: left;
-            border-bottom: 4px solid var(--neon-blue); transition: 0.3s;
-        }
-        .project-item:hover { background: #1a1a1a; transform: scale(1.02); }
-        .project-item h4 { font-family: 'Orbitron'; color: var(--neon-blue); margin-bottom: 10px; }
-
-        @keyframes glitch-anim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        #victory-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 150;
-        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 40px auto; }
+        .card { background: #1e293b; padding: 30px; border-radius: 10px; border-left: 5px solid var(--neon-blue); }
+        .skill { font-size: 3rem; color: var(--neon-blue); margin: 20px 0; }
+        h1 { font-size: 4rem; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="game-ui">
-        <div class="health-container">
-            <div class="label"><span>VOCÊ</span><span id="p-val">100%</span></div>
-            <div class="health-bar-bg"><div id="player-health" class="health-fill"></div></div>
+    <div id="ui">
+        <div class="bar-container">
+            <div class="status-tag">LUTADOR PRO <span id="p-block"></span></div>
+            <div class="hp-bg"><div id="p-fill" class="hp-fill"></div></div>
         </div>
-        <div class="health-container">
-            <div class="label"><span>OPONENTE</span><span id="e-val">100%</span></div>
-            <div class="health-bar-bg"><div id="enemy-health" class="health-fill"></div></div>
+        <div class="bar-container">
+            <div class="status-tag">OPONENTE <span id="e-block"></span></div>
+            <div class="hp-bg"><div id="e-fill" class="hp-fill"></div></div>
         </div>
     </div>
 
-    <div id="instructions">USE [A] [D] PARA MOVER E [ESPAÇO] PARA ATACAR</div>
-
-    <div id="victory-screen">
-        <h2 style="font-family: 'Orbitron'; font-size: 5rem; color: var(--neon-green);">VITÓRIA!</h2>
-        <p style="font-size: 1.5rem;">Acessando portfólio criptografado...</p>
+    <div id="controls">
+        [A][D] MOVER | [J] SOCO (10) | [K] CHUTE (15) | [S] BLOQUEIO (DEFESA TOTAL)
     </div>
 
     <div id="portfolio">
-        <div class="container">
-            <h1 class="glitch">Desenvolvedor Full Stack</h1>
-            
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <h3>JAVA</h3>
-                    <p>Backend robusto, Spring Boot e lógica escalável.</p>
-                </div>
-                <div class="skill-card">
-                    <h3>HTML5</h3>
-                    <p>Estrutura semântica, acessibilidade e SEO.</p>
-                </div>
+        <h1>MEU PORTFÓLIO NOTÁVEL</h1>
+        <div class="grid">
+            <div class="card">
+                <h2>HABILIDADES</h2>
+                <div class="skill">JAVA</div>
+                <p>Especialista em lógica de backend, Spring Boot e microserviços robustos.</p>
+                <div class="skill">HTML5</div>
+                <p>Criação de interfaces semânticas, acessíveis e otimizadas.</p>
             </div>
-
-            <div class="projects-section">
-                <h2 style="font-family:'Orbitron'; font-size: 2.5rem;">MEUS PROJETOS</h2>
-                <div class="project-list">
-                    <div class="project-item">
-                        <h4>Sistema de Gestão Sideral</h4>
-                        <p>CRUD completo feito em Java com banco de dados MySQL.</p>
-                    </div>
-                    <div class="project-item">
-                        <h4>Interface Quantum</h4>
-                        <p>Layout responsivo utilizando as últimas técnicas de CSS e HTML5.</p>
-                    </div>
-                    <div class="project-item">
-                        <h4>Game Engine 3D</h4>
-                        <p>Experiência interativa desenvolvida com JavaScript e Three.js.</p>
-                    </div>
-                </div>
+            <div class="card">
+                <h2>MEUS PROJETOS</h2>
+                <ul>
+                    <li><h3>E-commerce Engine</h3> Sistema completo em Java.</li>
+                    <li><h3>Dashboard Real-time</h3> Interface HTML/JS de alta performance.</li>
+                    <li><h3>Muay Thai VR</h3> Este simulador que você acabou de ver.</li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <div id="canvas-container"></div>
-
     <script>
-        // CONFIGURAÇÕES INICIAIS
-        let pHealth = 100, eHealth = 100, gameOver = false;
+        // CENÁRIO E CAMERA
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        scene.background = new THREE.Color(0x111111);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // ESPAÇO (STARS)
-        const starGeo = new THREE.BufferGeometry();
-        const starCount = 5000;
-        const posArray = new Float32Array(starCount * 3);
-        for(let i=0; i < starCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff });
-        const stars = new THREE.Points(starGeo, starMat);
-        scene.add(stars);
+        // LUZES DE ESTÁDIO
+        const light1 = new THREE.SpotLight(0xffffff, 1); light1.position.set(0, 20, 0); scene.add(light1);
+        const ambLight = new THREE.AmbientLight(0x404040, 2); scene.add(ambLight);
 
-        // RINGUE (PRETO COM CORDAS VERMELHAS)
-        const ringFloorGeo = new THREE.BoxGeometry(20, 0.5, 20);
-        const ringFloorMat = new THREE.MeshPhongMaterial({ color: 0x0a0a0a });
-        const ringFloor = new THREE.Mesh(ringFloorGeo, ringFloorMat);
-        scene.add(ringFloor);
-
-        // CORDAS VERMELHAS
-        function createRope(y) {
-            const ropeGeo = new THREE.TorusGeometry(10, 0.05, 16, 4);
-            const ropeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-            const rope = new THREE.Line(ropeGeo, ropeMat);
-            rope.rotation.x = Math.PI/2;
-            rope.position.y = y;
-            scene.add(rope);
-        }
-        createRope(1); createRope(2); createRope(3);
-
-        // PLATEIA (PARTÍCULAS BRILHANTES)
-        const audienceCount = 200;
-        for(let i=0; i<audienceCount; i++) {
-            const audGeo = new THREE.SphereGeometry(0.1, 8, 8);
-            const audMat = new THREE.MeshBasicMaterial({ color: Math.random() > 0.5 ? 0x00f2fe : 0xff004c });
-            const person = new THREE.Mesh(audGeo, audMat);
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 15 + Math.random() * 5;
-            person.position.set(Math.cos(angle)*dist, Math.random()*5, Math.sin(angle)*dist);
-            scene.add(person);
+        // CRIAR ESTÁDIO E ARQUIBANCADA
+        function createStadium() {
+            const stepGeo = new THREE.BoxGeometry(60, 1, 2);
+            const stepMat = new THREE.MeshPhongMaterial({ color: 0x222222 });
+            for(let i=0; i<10; i++) {
+                const step = new THREE.Mesh(stepGeo, stepMat);
+                step.position.set(0, i * 0.8, -15 - (i * 1.5));
+                scene.add(step);
+                // Adicionar Plateia no degrau
+                for(let j=-25; j<25; j+=3) {
+                    createAudience(j + Math.random(), i * 0.8 + 1, -15 - (i * 1.5));
+                }
+            }
         }
 
-        // BONECOS DE PALITO (STICKMEN)
-        function createStickman(color) {
+        function createAudience(x, y, z) {
             const group = new THREE.Group();
-            const mat = new THREE.MeshBasicMaterial({ color: color });
-            
-            // Cabeça
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), mat);
-            head.position.y = 3.5; group.add(head);
-            
-            // Corpo
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5), mat);
-            body.position.y = 2.5; group.add(body);
-            
-            // Braços
-            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
-            arm.rotation.z = Math.PI/2; arm.position.y = 3; group.add(arm);
-            
-            // Pernas
-            const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
-            legL.position.set(-0.3, 1.5, 0); legL.rotation.z = 0.2; group.add(legL);
-            const legR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), mat);
-            legR.position.set(0.3, 1.5, 0); legR.rotation.z = -0.2; group.add(legR);
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1, 0.5), new THREE.MeshLambertMaterial({color: 0x333333}));
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), new THREE.MeshLambertMaterial({color: 0xffdbac}));
+            // Rosto simples
+            const eye = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), new THREE.MeshBasicMaterial({color: 0x000}));
+            eye.position.set(0.15, 0.1, 0.35); head.add(eye);
+            head.position.y = 0.8;
+            group.add(body); group.add(head);
+            group.position.set(x, y, z);
+            scene.add(group);
+        }
+        createStadium();
 
-            return group;
+        // OCTÓGONO (UFC)
+        const ringGeo = new THREE.CylinderGeometry(12, 12, 0.5, 8);
+        const ringMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        scene.add(ring);
+        // Cordas Vermelhas
+        const ropeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        for(let i=1; i<=3; i++) {
+            const rope = new THREE.Mesh(new THREE.TorusGeometry(12, 0.05, 8, 8), ropeMat);
+            rope.rotation.x = Math.PI/2; rope.position.y = i; scene.add(rope);
         }
 
-        const player = createStickman(0x00f2fe); player.position.x = -5; scene.add(player);
-        const enemy = createStickman(0xff004c); enemy.position.x = 5; enemy.rotation.y = Math.PI; scene.add(enemy);
+        // BONECO MUAY THAI
+        function createFighter(color) {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshPhongMaterial({ color: color });
+            
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshPhongMaterial({color: 0xffdbac}));
+            head.position.y = 4;
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.8), mat);
+            body.position.y = 2.8;
+            
+            // Membros (Articulados)
+            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.15), mat);
+            armL.position.set(-0.5, 3.2, 0.3); armL.rotation.x = -0.5; // Guarda de Muay Thai
+            
+            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1.5, 0.15), mat);
+            armR.position.set(0.5, 3.2, 0.3); armR.rotation.x = -0.5;
 
-        // LUZES
-        const light = new THREE.PointLight(0xffffff, 1, 100); light.position.set(0, 10, 0); scene.add(light);
-        const ambLight = new THREE.AmbientLight(0x404040); scene.add(ambLight);
+            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 0.2), mat);
+            legL.position.set(-0.4, 1, 0);
 
-        camera.position.set(0, 6, 15);
+            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 0.2), mat);
+            legR.position.set(0.4, 1, 0);
+
+            group.add(head, body, armL, armR, legL, legR);
+            return { group, armL, armR, legL, legR, head };
+        }
+
+        const player = createFighter(0x00f2fe); player.group.position.x = -4; scene.add(player.group);
+        const enemy = createFighter(0xff004c); enemy.group.position.x = 4; enemy.group.rotation.y = Math.PI; scene.add(enemy.group);
+
+        camera.position.set(0, 8, 20);
         camera.lookAt(0, 2, 0);
 
-        // LÓGICA DE MOVIMENTO
+        // LÓGICA DO JOGO
+        let pHP = 100, eHP = 100, isPBlocking = false, isEBlocking = false;
         const keys = {};
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
+        window.onkeydown = e => keys[e.code] = true;
+        window.onkeyup = e => keys[e.code] = false;
 
-        function updateGame() {
-            if(gameOver) return;
+        function animateFighter(fighter, type) {
+            if(type === 'punch') {
+                fighter.armR.position.z = 2;
+                setTimeout(() => fighter.armR.position.z = 0.3, 100);
+            }
+            if(type === 'kick') {
+                fighter.legR.rotation.x = -1.2;
+                fighter.legR.position.z = 1;
+                setTimeout(() => { fighter.legR.rotation.x = 0; fighter.legR.position.z = 0; }, 150);
+            }
+            if(type === 'block') {
+                fighter.armL.rotation.x = -1.5; fighter.armR.rotation.x = -1.5;
+                fighter.armL.position.y = 3.8; fighter.armR.position.y = 3.8;
+            } else {
+                fighter.armL.rotation.x = -0.5; fighter.armR.rotation.x = -0.5;
+                fighter.armL.position.y = 3.2; fighter.armR.position.y = 3.2;
+            }
+        }
 
-            // Player move
-            if (keys['KeyA'] && player.position.x > -8) player.position.x -= 0.15;
-            if (keys['KeyD'] && player.position.x < 8) player.position.x += 0.15;
-
-            // IA simples inimigo
-            if (enemy.position.x > player.position.x + 2.5) enemy.position.x -= 0.08;
-            else if (enemy.position.x < player.position.x - 2.5) enemy.position.x += 0.08;
-
-            // Ataque Player
-            if (keys['Space']) {
-                player.rotation.z = -0.5; // Animação de ataque
-                if (Math.abs(player.position.x - enemy.position.x) < 2.5) {
-                    eHealth -= 0.5;
-                    enemy.position.x += 0.2; // Knockback
-                    updateUI();
-                }
-            } else { player.rotation.z = 0; }
-
-            // Ataque Inimigo (Aleatório)
-            if (Math.abs(player.position.x - enemy.position.x) < 2.5 && Math.random() < 0.05) {
-                pHealth -= 1;
-                player.position.x -= 0.2;
-                updateUI();
+        function gameLoop() {
+            if(eHP <= 0) { 
+                document.getElementById('portfolio').style.display = 'block'; 
+                return; 
             }
 
-            if (eHealth <= 0) winGame();
-            if (pHealth <= 0) pHealth = 100; // Imortal para facilitar o teste
+            // Controles Jogador
+            isPBlocking = keys['KeyS'] || keys['ArrowDown'];
+            document.getElementById('p-block').innerText = isPBlocking ? "(BLOQUEANDO)" : "";
+            animateFighter(player, isPBlocking ? 'block' : 'idle');
+
+            if(keys['KeyA']) player.group.position.x -= 0.1;
+            if(keys['KeyD']) player.group.position.x += 0.1;
+
+            // Ataques (J = Soco, K = Chute)
+            if(keys['KeyJ']) {
+                animateFighter(player, 'punch');
+                checkHit(player, enemy, 10, 2.5);
+                keys['KeyJ'] = false;
+            }
+            if(keys['KeyK']) {
+                animateFighter(player, 'kick');
+                checkHit(player, enemy, 15, 3.5);
+                keys['KeyK'] = false;
+            }
+
+            // IA Simples
+            if(enemy.group.position.x > player.group.position.x + 3) enemy.group.position.x -= 0.05;
+            else if (Math.random() < 0.02) {
+                animateFighter(enemy, 'punch');
+                checkHit(enemy, player, 8, 2.5);
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function checkHit(attacker, target, damage, range) {
+            const dist = Math.abs(attacker.group.position.x - target.group.position.x);
+            if(dist < range) {
+                const isBlocked = (target === player) ? isPBlocking : isEBlocking;
+                if(!isBlocked) {
+                    if(target === enemy) eHP -= damage;
+                    else pHP -= damage;
+                    updateUI();
+                }
+            }
         }
 
         function updateUI() {
-            document.getElementById('player-health').style.width = pHealth + '%';
-            document.getElementById('enemy-health').style.width = eHealth + '%';
-            document.getElementById('p-val').innerText = Math.ceil(pHealth) + '%';
-            document.getElementById('e-val').innerText = Math.ceil(eHealth) + '%';
+            document.getElementById('e-fill').style.width = eHP + "%";
+            document.getElementById('p-fill').style.width = pHP + "%";
         }
 
-        function winGame() {
-            gameOver = true;
-            document.getElementById('victory-screen').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('victory-screen').style.opacity = '0';
-                document.getElementById('portfolio').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('portfolio').style.opacity = '1';
-                }, 100);
-            }, 2000);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            updateGame();
-            stars.rotation.y += 0.001;
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        animate();
+        gameLoop();
     </script>
 </body>
 </html>
