@@ -2,131 +2,128 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>JAVA FIGHTER II: ARCADE EDITION</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>JAVA FIGHTER II: ARCADE EDITION 2D</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffd700; --red: #ff3131; --blue: #00d2ff; }
+        :root { --gold: #ffcc00; --red: #ff3131; --blue: #00d2ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #000; font-family: 'Press Start 2P', cursive; color: white; overflow: hidden; }
 
-        /* INTERFACE SISTEMA */
-        .screen { position: absolute; width: 100vw; height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; background: #000; text-align: center; }
+        /* TELAS */
+        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: #000; text-align: center; }
         .active { display: flex; }
         
-        #start-screen { background: radial-gradient(circle, #222 0%, #000 100%); border: 15px double #444; }
-        .title { font-size: 35px; color: #ff8c00; text-shadow: 4px 4px #000, 6px 6px var(--gold); margin-bottom: 50px; }
+        #start-screen { background: linear-gradient(to bottom, #111, #000); border: 10px double #333; }
+        .title { font-size: 40px; color: #ff4500; text-shadow: 4px 4px #000, 6px 6px var(--gold); margin-bottom: 40px; }
 
-        /* SELEÇÃO */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; padding: 20px; }
-        .card { border: 4px solid #444; background: #111; padding: 10px; cursor: pointer; transition: 0.2s; width: 220px; }
-        .card:hover { border-color: var(--gold); transform: scale(1.05); background: #222; }
-        .card img { width: 100%; height: 130px; object-fit: cover; border: 2px solid #333; margin-bottom: 10px; }
-        .card h3 { font-size: 10px; margin-bottom: 5px; color: var(--gold); }
-        .card p { font-size: 8px; color: var(--blue); }
+        /* GRID SELEÇÃO */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .card { border: 4px solid #444; background: #1a1a1a; padding: 10px; cursor: pointer; transition: 0.2s; width: 180px; }
+        .card:hover { border-color: var(--gold); transform: scale(1.1); background: #333; }
+        .card img { width: 100%; height: 120px; object-fit: cover; border: 2px solid #000; margin-bottom: 10px; }
+        .card h3 { font-size: 10px; margin-bottom: 5px; }
+        .card p { font-size: 7px; color: var(--blue); }
 
-        /* HUD JOGO */
-        #hud { position: absolute; top: 0; width: 100%; display: none; justify-content: space-between; padding: 40px; z-index: 50; pointer-events: none; }
-        .hp-container { width: 35%; }
-        .hp-bar { height: 25px; background: #333; border: 3px solid #fff; box-shadow: 0 0 10px #000; }
-        .hp-fill { height: 100%; width: 100%; transition: width 0.2s; }
-        #hp-p1 { background: linear-gradient(90deg, #00ff00, #adff2f); }
-        #hp-p2 { background: linear-gradient(90deg, #ff0000, #ff4500); }
-        #round-info { font-size: 18px; color: var(--gold); text-shadow: 2px 2px #000; }
+        /* HUD */
+        #hud { position: absolute; top: 0; width: 100%; display: none; justify-content: space-between; padding: 30px 50px; z-index: 5; }
+        .health-container { width: 40%; }
+        .health-bar { height: 30px; background: #444; border: 4px solid #fff; position: relative; }
+        .health-fill { height: 100%; width: 100%; transition: width 0.3s; }
+        #hp-p1 { background: linear-gradient(to bottom, #00ff00, #008800); }
+        #hp-p2 { background: linear-gradient(to bottom, #ff0000, #880000); }
+        #round-box { font-size: 20px; color: var(--gold); padding: 5px 15px; border: 2px solid var(--gold); background: rgba(0,0,0,0.5); }
 
-        /* COMANDOS NA TELA */
-        #controls-info { position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 10px; color: #777; z-index: 50; text-transform: uppercase; }
+        /* MENSAGENS */
+        #ko-text { position: absolute; top: 40%; width: 100%; text-align: center; font-size: 80px; color: var(--red); display: none; z-index: 20; -webkit-text-stroke: 3px white; }
+        #controls-hint { position: absolute; bottom: 20px; font-size: 10px; color: #aaa; z-index: 5; background: rgba(0,0,0,0.7); padding: 10px; }
 
-        /* TEXTOS DE EFEITO */
-        #ko-overlay { position: absolute; top: 40%; width: 100%; text-align: center; font-size: 80px; color: var(--red); display: none; z-index: 200; -webkit-text-stroke: 2px white; }
+        .btn { padding: 15px 30px; border: 4px solid #fff; background: #004e92; color: #fff; cursor: pointer; font-family: inherit; font-size: 12px; margin: 10px; }
+        .btn:hover { background: var(--red); }
 
         /* PORTFOLIO */
-        #portfolio-screen { background: #0f172a; text-align: left; align-items: flex-start; overflow-y: auto; padding: 60px; }
-        .skill-tag { color: var(--blue); font-size: 18px; margin: 20px 0 10px 0; border-left: 5px solid var(--blue); padding-left: 15px; }
+        #portfolio-screen { background: #0f172a; text-align: left; align-items: flex-start; padding: 60px; overflow-y: auto; }
+        .skill-item { border-left: 5px solid var(--blue); padding-left: 20px; margin: 25px 0; }
 
-        .btn-arcade { padding: 15px 30px; border: 4px solid #fff; background: #004e92; color: #fff; cursor: pointer; font-family: inherit; margin: 10px; font-size: 12px; }
-        .btn-arcade:hover { background: #ff4500; }
-
-        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10; display: block; }
+        canvas { background: #222; image-rendering: pixelated; }
     </style>
 </head>
 <body>
 
     <div id="start-screen" class="screen active">
-        <h1 class="title">JAVA FIGHTER II<br><span style="font-size: 14px;">READY TO COMPILE?</span></h1>
-        <button class="btn-arcade" onclick="showSelect()">JOGAR</button>
+        <h1 class="title">JAVA FIGHTER II<br><span style="font-size: 14px; color: #fff;">2D ARCADE EDITION</span></h1>
+        <button class="btn" onclick="showSelect()">INSERT COIN</button>
     </div>
 
     <div id="select-screen" class="screen">
-        <h2>ESCOLHA SEU PERSONAGEM</h2>
+        <h2 style="margin-bottom:20px;">CHOOSE YOUR FIGHTER</h2>
         <div class="grid" id="char-grid"></div>
     </div>
 
     <div id="arena-screen" class="screen">
-        <h2>ESCOLHA A ARENA</h2>
+        <h2 style="margin-bottom:20px;">SELECT STAGE</h2>
         <div class="grid" id="arena-grid" style="grid-template-columns: repeat(2, 1fr);"></div>
     </div>
 
     <div id="result-screen" class="screen">
-        <h1 id="result-msg">DEFEAT</h1>
-        <div style="margin-top: 40px;">
-            <button class="btn-arcade" onclick="location.reload()">SAIR</button>
-            <button class="btn-arcade" onclick="showSelect()">JOGAR NOVAMENTE</button>
-            <button id="btn-port" class="btn-arcade" style="display:none; background: #22c55e;" onclick="showPortfolio()">VER MEU PORTFÓLIO</button>
+        <h1 id="result-title">VICTORY</h1>
+        <div id="result-options">
+            <button class="btn" onclick="location.reload()">MENU</button>
+            <button id="port-btn" class="btn" style="display:none; background: #22c55e;" onclick="showPortfolio()">VIEW PORTFOLIO</button>
         </div>
     </div>
 
     <div id="portfolio-screen" class="screen">
-        <h1 style="color: var(--gold); border-bottom: 4px solid #fff; width: 100%; padding-bottom: 20px;">CURRÍCULO DEV</h1>
-        <div class="skill-tag">ESPECIALIDADE: JAVA</div>
-        <p>Desenvolvimento de APIs robustas, lógica de sistemas e backend.</p>
-        <div class="skill-tag">FRONTEND: HTML / CSS / THREE.JS</div>
-        <p>Interfaces gamificadas e experiências visuais 3D interativas.</p>
-        <div style="margin-top: 40px; background: #1e293b; padding: 20px; border-radius: 8px; width: 100%;">
-            <p><strong>PROJETO:</strong> Arcade Engine 3D (Este jogo)</p>
+        <h1 style="color: var(--gold); border-bottom: 4px solid #fff; width: 100%; padding-bottom: 20px;">SYSTEM_DEV_INFO</h1>
+        <div class="skill-item">
+            <h3>CORE: JAVA / BACKEND</h3>
+            <p>Especialista em lógica, processamento de dados e arquitetura de sistemas.</p>
         </div>
-        <button class="btn-arcade" onclick="location.reload()" style="margin-top: 40px;">VOLTAR AO MENU</button>
+        <div class="skill-item">
+            <h3>FRONT: HTML5 / CANVAS / CSS</h3>
+            <p>Criação de jogos 2D e interfaces de alta performance sem bugs.</p>
+        </div>
+        <button class="btn" onclick="location.reload()">EXIT</button>
     </div>
 
     <div id="hud">
-        <div class="hp-container">
-            <div id="p1-label">PLAYER</div>
-            <div class="hp-bar"><div id="hp-p1" class="hp-fill"></div></div>
+        <div class="health-container">
+            <div id="name-p1" style="margin-bottom:5px;">PLAYER</div>
+            <div class="health-bar"><div id="hp-p1" class="health-fill"></div></div>
         </div>
-        <div id="round-info">ROUND 1</div>
-        <div class="hp-container">
-            <div id="p2-label" style="text-align:right">CPU</div>
-            <div class="hp-bar"><div id="hp-p2" class="hp-fill" style="float:right"></div></div>
+        <div id="round-box">R1</div>
+        <div class="health-container" style="text-align:right">
+            <div id="name-p2" style="margin-bottom:5px;">CPU</div>
+            <div class="health-bar"><div id="hp-p2" class="health-fill" style="float:right"></div></div>
         </div>
     </div>
 
-    <div id="controls-info" style="display:none;">
-        W:PULAR | A,D:MOVER | S:BLOQUEAR | J:SOCO | K:CHUTE | L:ESPECIAL
-    </div>
+    <div id="ko-text">K.O.</div>
+    <div id="controls-hint" style="display:none">W:PULAR | A,D:MOVER | S:BLOQUEIO | J:SOCO | K:CHUTE | L:ESPECIAL</div>
 
-    <div id="ko-overlay">K.O.</div>
-
-    <div id="canvas-container"></div>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
-        let scene, camera, renderer, p1, p2, gameState = 'MENU';
-        let p1HP = 100, p2HP = 100, p1Wins = 0, p2Wins = 0, round = 1;
-        let selectedFighter, enemyFighter, arenaStage;
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = 'MENU';
+        let p1Wins = 0, p2Wins = 0, currentRound = 1;
+        let selectedChar, enemyChar, stageColor;
 
         const fighters = [
-            { name: 'JAVA-SAN', color: 0xff4400, img: 'https://picsum.photos/seed/fighter1/300/200', power: 'BYTECODE' },
-            { name: 'KODER', color: 0x00ffcc, img: 'https://picsum.photos/seed/fighter2/300/200', power: 'STATIC' },
-            { name: 'PIXEL', color: 0xff00ff, img: 'https://picsum.photos/seed/fighter3/300/200', power: 'GLITCH' },
-            { name: 'VOID', color: 0x444444, img: 'https://picsum.photos/seed/fighter4/300/200', power: 'NULL' },
-            { name: 'BIT', color: 0xffff00, img: 'https://picsum.photos/seed/fighter5/300/200', power: 'OVERCLOCK' },
-            { name: 'LOGIC', color: 0x0044ff, img: 'https://picsum.photos/seed/fighter6/300/200', power: 'BOOLEAN' }
+            { name: 'JAVA-SAN', color: '#ff4400', img: 'https://picsum.photos/seed/f1/200', power: 'JVM BURN' },
+            { name: 'KODER', color: '#00ffcc', img: 'https://picsum.photos/seed/f2/200', power: 'STATIC' },
+            { name: 'PIXEL', color: '#ff00ff', img: 'https://picsum.photos/seed/f3/200', power: 'GLITCH' },
+            { name: 'VOID', color: '#444444', img: 'https://picsum.photos/seed/f4/200', power: 'NULL' },
+            { name: 'BIT', color: '#ffff00', img: 'https://picsum.photos/seed/f5/200', power: 'OVER' },
+            { name: 'LOGIC', color: '#0044ff', img: 'https://picsum.photos/seed/f6/200', power: 'BOOL' }
         ];
 
-        const arenas = [
-            { name: 'DOJO CLÁSSICO', color: 0x2d1a00, img: 'https://picsum.photos/seed/stage1/400/300' },
-            { name: 'CYBER PUNK', color: 0x00051a, img: 'https://picsum.photos/seed/stage2/400/300' },
-            { name: 'VOID ARENA', color: 0x050505, img: 'https://picsum.photos/seed/stage3/400/300' },
-            { name: '🎲 RANDOM', color: 0x111111, img: 'https://picsum.photos/seed/random/400/300', isRandom: true }
+        const stages = [
+            { name: 'DOJO CLÁSSICO', color: '#4d2600', img: 'https://picsum.photos/seed/s1/400/200' },
+            { name: 'CYBER CITY', color: '#000033', img: 'https://picsum.photos/seed/s2/400/200' },
+            { name: 'VOID ZONE', color: '#111111', img: 'https://picsum.photos/seed/s3/400/200' },
+            { name: 'HOT DESERT', color: '#edc9af', img: 'https://picsum.photos/seed/s4/400/200' }
         ];
 
         function showScreen(id) {
@@ -142,184 +139,174 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `<img src="${f.img}"><h3>${f.name}</h3><p>${f.power}</p>`;
-                card.onclick = () => { selectedFighter = f; showArenaSelect(); };
+                card.onclick = () => { selectedChar = f; showArenas(); };
                 grid.appendChild(card);
             });
         }
 
-        function showArenaSelect() {
+        function showArenas() {
             showScreen('arena-screen');
             const grid = document.getElementById('arena-grid');
             grid.innerHTML = '';
-            arenas.forEach(a => {
+            stages.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'card'; card.style.width = '300px';
-                card.innerHTML = `<img src="${a.img}"><h3>${a.name}</h3>`;
-                card.onclick = () => {
-                    arenaStage = a.isRandom ? arenas[Math.floor(Math.random()*3)] : a;
-                    initGame();
-                };
+                card.innerHTML = `<img src="${s.img}"><h3>${s.name}</h3>`;
+                card.onclick = () => { stageColor = s.color; initFight(); };
                 grid.appendChild(card);
             });
         }
 
-        function initGame() {
-            showScreen('none');
-            document.getElementById('hud').style.display = 'flex';
-            document.getElementById('controls-info').style.display = 'block';
-            
-            enemyFighter = fighters[Math.floor(Math.random()*fighters.length)];
-            document.getElementById('p1-label').innerText = selectedFighter.name;
-            document.getElementById('p2-label').innerText = enemyFighter.name;
-
-            // BUG FIX: Espera um frame para o DOM atualizar o container
-            setTimeout(() => {
-                setupThreeJS();
-                gameState = 'FIGHT';
-            }, 100);
-        }
-
-        function setupThreeJS() {
-            const container = document.getElementById('canvas-container');
-            container.innerHTML = ''; // Limpa antes de criar
-
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(arenaStage.color);
-            
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 5, 14);
-            camera.lookAt(0, 2, 0);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            container.appendChild(renderer.domElement);
-
-            const floor = new THREE.Mesh(new THREE.BoxGeometry(40, 1, 10), new THREE.MeshPhongMaterial({color: 0x222222}));
-            floor.position.y = -0.5;
-            scene.add(floor);
-
-            const light = new THREE.DirectionalLight(0xffffff, 1.2);
-            light.position.set(5, 10, 7);
-            scene.add(light, new THREE.AmbientLight(0xffffff, 0.4));
-
-            p1 = createModel(selectedFighter.color, -6);
-            p2 = createModel(enemyFighter.color, 6);
-            p2.group.rotation.y = Math.PI;
-
-            animate();
-        }
-
-        function createModel(color, x) {
-            const group = new THREE.Group();
-            const mat = new THREE.MeshPhongMaterial({color: color});
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.2, 1.8), mat);
-            body.position.y = 1.8;
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshPhongMaterial({color: 0xffdbac}));
-            head.position.y = 3;
-            
-            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.2), mat);
-            arm.position.set(0.5, 2.2, 0.3); arm.rotation.x = -1;
-
-            group.add(body, head, arm);
-            group.position.x = x;
-            scene.add(group);
-            return { group, arm, vy: 0, jumping: false, state: 'idle' };
-        }
-
+        // MOTOR DO JOGO 2D
+        let p1, p2;
         const keys = {};
-        window.onkeydown = e => keys[e.code] = true;
-        window.onkeyup = e => keys[e.code] = false;
 
-        function animate() {
-            if(gameState === 'MENU') return;
-            requestAnimationFrame(animate);
+        function initFight() {
+            showScreen('none');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('controls-hint').style.display = 'block';
+            
+            enemyChar = fighters[Math.floor(Math.random()*fighters.length)];
+            document.getElementById('name-p1').innerText = selectedChar.name;
+            document.getElementById('name-p2').innerText = enemyChar.name;
 
-            if(gameState === 'FIGHT') {
-                if(keys['KeyA'] && p1.group.position.x > -18) p1.group.position.x -= 0.15;
-                if(keys['KeyD'] && p1.group.position.x < 18) p1.group.position.x += 0.15;
-                if(keys['KeyW'] && !p1.jumping) { p1.vy = 0.35; p1.jumping = true; }
-                p1.group.position.y += p1.vy;
-                if(p1.jumping) { p1.vy -= 0.018; if(p1.group.position.y <= 0) { p1.group.position.y = 0; p1.jumping = false; } }
-
-                if(keys['KeyJ']) doAttack(p1, p2, 10);
-                if(keys['KeyK']) doAttack(p1, p2, 15);
-                if(keys['KeyL']) doAttack(p1, p2, 35);
-
-                const dist = p2.group.position.x - p1.group.position.x;
-                if(dist > 3.5) p2.group.position.x -= 0.08;
-                else if (Math.random() < 0.03) doAttack(p2, p1, 10);
-            } else if (gameState === 'KO') {
-                const winner = p1HP > 0 ? p1 : p2;
-                winner.group.position.y = Math.abs(Math.sin(Date.now()*0.01)) * 1.5;
-                winner.group.rotation.y += 0.1;
-            }
-            renderer.render(scene, camera);
+            p1 = { x: 200, y: canvas.height - 250, w: 80, h: 200, hp: 100, vy: 0, jump: false, color: selectedChar.color, attack: false, dir: 1 };
+            p2 = { x: canvas.width - 280, y: canvas.height - 250, w: 80, h: 200, hp: 100, vy: 0, jump: false, color: enemyChar.color, attack: false, dir: -1 };
+            
+            gameState = 'FIGHT';
+            requestAnimationFrame(gameLoop);
         }
 
-        function doAttack(attacker, target, damage) {
-            if(attacker.state !== 'idle') return;
-            attacker.state = 'attack';
-            attacker.arm.position.z = 1.2;
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
 
-            const dist = Math.abs(attacker.group.position.x - target.group.position.x);
-            if(dist < 3.5) {
-                if(target === p1 && keys['KeyS']) damage *= 0.1;
-                if(target === p1) p1HP -= damage; else p2HP -= damage;
-                updateHUD();
+        function gameLoop() {
+            if(gameState === 'MENU') return;
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            if(gameState !== 'FIGHT' && gameState !== 'KO') return;
+
+            // Movimento P1
+            if(keys['KeyA']) p1.x -= 8;
+            if(keys['KeyD']) p1.x += 8;
+            if(keys['KeyW'] && !p1.jump) { p1.vy = -25; p1.jump = true; }
+            if(keys['KeyJ'] || keys['KeyK'] || keys['KeyL']) performAttack(p1, p2);
+
+            // Gravidade
+            p1.y += p1.vy; p1.vy += 1.2;
+            if(p1.y > canvas.height - 250) { p1.y = canvas.height - 250; p1.jump = false; p1.vy = 0; }
+
+            // IA Simples P2
+            const dist = p2.x - p1.x;
+            if(dist > 150) p2.x -= 4;
+            else if (dist < -150) p2.x += 4;
+            else if (Math.random() < 0.05) performAttack(p2, p1);
+
+            p2.y += p2.vy; p2.vy += 1.2;
+            if(p2.y > canvas.height - 250) { p2.y = canvas.height - 250; p2.jump = false; p2.vy = 0; }
+
+            // Dança da vitória
+            if(gameState === 'KO') {
+                const winner = p1.hp > 0 ? p1 : p2;
+                winner.y = (canvas.height - 250) - Math.abs(Math.sin(Date.now()*0.01)*100);
             }
+        }
 
-            setTimeout(() => { attacker.arm.position.z = 0.3; attacker.state = 'idle'; }, 200);
-            if(p1HP <= 0 || p2HP <= 0) handleKO();
+        function performAttack(attacker, target) {
+            if(attacker.attack) return;
+            attacker.attack = true;
+            
+            const hit = Math.abs(attacker.x - target.x) < 150 && Math.abs(attacker.y - target.y) < 100;
+            if(hit) {
+                let damage = 5;
+                if(keys['KeyL']) damage = 15;
+                if(target === p1 && keys['KeyS']) damage *= 0.2; // Bloqueio
+                target.hp -= damage;
+                updateHUD();
+                if(target.hp <= 0 && gameState === 'FIGHT') triggerKO();
+            }
+            setTimeout(() => attacker.attack = false, 300);
         }
 
         function updateHUD() {
-            document.getElementById('hp-p1').style.width = Math.max(0, p1HP) + "%";
-            document.getElementById('hp-p2').style.width = Math.max(0, p2HP) + "%";
+            document.getElementById('hp-p1').style.width = Math.max(0, p1.hp) + "%";
+            document.getElementById('hp-p2').style.width = Math.max(0, p2.hp) + "%";
         }
 
-        function handleKO() {
+        function triggerKO() {
             gameState = 'KO';
-            const ko = document.getElementById('ko-overlay');
-            ko.style.display = 'block';
-            if(p1HP <= 0) p2Wins++; else p1Wins++;
+            document.getElementById('ko-text').style.display = 'block';
+            if(p1.hp <= 0) p2Wins++; else p1Wins++;
 
             setTimeout(() => {
-                ko.style.display = 'none';
-                if(p1Wins === 2 || p2Wins === 2) showFinalResult();
+                document.getElementById('ko-text').style.display = 'none';
+                if(p1Wins === 2 || p2Wins === 2) endMatch();
                 else nextRound();
             }, 3000);
         }
 
         function nextRound() {
-            round++;
-            p1HP = 100; p2HP = 100; updateHUD();
-            p1.group.position.set(-6, 0, 0); p2.group.position.set(6, 0, 0);
-            document.getElementById('round-info').innerText = "ROUND " + round;
+            currentRound++;
+            document.getElementById('round-box').innerText = "R" + currentRound;
+            p1.hp = 100; p2.hp = 100;
+            p1.x = 200; p2.x = canvas.width - 280;
+            updateHUD();
             gameState = 'FIGHT';
         }
 
-        function showFinalResult() {
+        function endMatch() {
             showScreen('result-screen');
-            document.getElementById('hud').style.display = 'none';
-            const msg = document.getElementById('result-msg');
+            const title = document.getElementById('result-title');
             if(p1Wins > p2Wins) {
-                msg.innerText = "VICTORY!"; msg.style.color = "#00ff00";
-                document.getElementById('btn-port').style.display = 'inline-block';
+                title.innerText = "YOU WIN!"; title.style.color = "#00ff00";
+                document.getElementById('port-btn').style.display = 'inline-block';
             } else {
-                msg.innerText = "DEFEAT"; msg.style.color = "red";
-                document.getElementById('btn-port').style.display = 'none';
+                title.innerText = "YOU LOSE"; title.style.color = "red";
+            }
+            gameState = 'MENU';
+        }
+
+        function draw() {
+            ctx.fillStyle = stageColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Chão
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+
+            // Desenhar Lutadores (Sombra)
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(p1.x + 40, canvas.height - 50, 60, 20, 0, 0, Math.PI * 2);
+            ctx.ellipse(p2.x + 40, canvas.height - 50, 60, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // P1
+            drawFighter(p1);
+            // P2
+            drawFighter(p2);
+        }
+
+        function drawFighter(f) {
+            ctx.fillStyle = f.color;
+            ctx.fillRect(f.x, f.y, f.w, f.h); // Corpo
+            ctx.fillStyle = '#ffdbac';
+            ctx.fillRect(f.x + 10, f.y - 40, 60, 60); // Cabeça
+            
+            // Braço Atacando
+            if(f.attack) {
+                ctx.fillStyle = f.color;
+                ctx.fillRect(f.x + (f.dir * 80), f.y + 50, 80, 30);
             }
         }
 
         function showPortfolio() { showScreen('portfolio-screen'); }
-
-        window.onresize = () => {
-            if(camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        };
     </script>
 </body>
 </html>
