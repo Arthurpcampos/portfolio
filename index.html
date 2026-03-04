@@ -1,1 +1,273 @@
-oi
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio Interativo | Faça o Gol!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* ================= RESET E GERAL ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { overflow: hidden; background-color: #0f172a; color: white; }
+
+        /* ================= TELA DO JOGO ================= */
+        #game-ui {
+            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
+            text-align: center; z-index: 10; pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        #game-ui h1 { font-size: 2.5rem; color: #fff; animation: pulse 1.5s infinite; }
+        #game-ui p { font-size: 1.2rem; color: #cbd5e1; margin-top: 10px; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: opacity 1s ease; }
+
+        /* ================= PORTFÓLIO (FIRULAS E ANIMAÇÕES) ================= */
+        #portfolio {
+            display: none; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow-y: auto; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            padding: 50px 20px; text-align: center; opacity: 0;
+        }
+        
+        .header-title { font-size: 4rem; font-weight: bold; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; color: transparent; animation: slideDown 1s ease forwards; }
+        .subtitle { font-size: 1.5rem; color: #94a3b8; margin-bottom: 40px; animation: fadeIn 2s ease forwards; }
+
+        .skills-container { display: flex; justify-content: center; gap: 30px; margin-bottom: 60px; }
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px 50px; border-radius: 15px; font-size: 2rem; font-weight: bold;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0; transform: translateY(50px);
+        }
+        .skill-card:nth-child(1) { animation-delay: 0.5s; color: #f89820; /* Java Color */ }
+        .skill-card:nth-child(2) { animation-delay: 0.7s; color: #e34c26; /* HTML Color */ }
+        
+        .skill-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 30px currentColor; }
+
+        .projects-section { max-width: 1000px; margin: 0 auto; text-align: left; }
+        .projects-section h2 { font-size: 2.5rem; border-bottom: 2px solid #4facfe; padding-bottom: 10px; margin-bottom: 30px; color: #e2e8f0; }
+        
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .project-card {
+            background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 20px;
+            border-left: 4px solid #4facfe; transition: all 0.3s;
+        }
+        .project-card:hover { background: rgba(0, 0, 0, 0.5); transform: translateX(10px); border-color: #00f2fe; }
+        .project-card h3 { color: #fff; margin-bottom: 10px; }
+        .project-card p { color: #94a3b8; }
+
+        /* ================= KEYFRAMES (ANIMAÇÕES) ================= */
+        @keyframes pulse { 0% { transform: scale(1); text-shadow: 0 0 10px #4facfe; } 50% { transform: scale(1.05); text-shadow: 0 0 20px #00f2fe; } 100% { transform: scale(1); text-shadow: 0 0 10px #4facfe; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
+        .show-portfolio { display: block !important; animation: fadeIn 1.5s ease forwards; }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-ui">
+        <h1 id="status-text">⚽ Faça um gol para acessar!</h1>
+        <p>Clique ou toque na tela para mirar e chutar</p>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="portfolio">
+        <h1 class="header-title">Bem-vindo ao meu Mundo!</h1>
+        <p class="subtitle">Desenvolvedor Focado, Criativo e Apaixonado por Tecnologia</p>
+
+        <div class="skills-container">
+            <div class="skill-card">☕ Java</div>
+            <div class="skill-card">🌐 HTML5</div>
+        </div>
+
+        <div class="projects-section">
+            <h2>Meus Projetos</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>Projeto 1: Sistema XYZ</h3>
+                    <p>Descrição incrível sobre o projeto que você construiu usando Java no backend.</p>
+                </div>
+                <div class="project-card">
+                    <h3>Projeto 2: Landing Page Interativa</h3>
+                    <p>Uma página web moderna estruturada perfeitamente com HTML semântico.</p>
+                </div>
+                <div class="project-card">
+                    <h3>Projeto 3: Espaço Aberto</h3>
+                    <p>Substitua este texto pelos seus projetos reais que vão garantir a sua vaga!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração Básica do Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Céu azul
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Iluminação
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 10, 5);
+        scene.add(dirLight);
+
+        // Campo de Futebol (Grama)
+        const fieldGeo = new THREE.PlaneGeometry(30, 40);
+        const fieldMat = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+        const field = new THREE.Mesh(fieldGeo, fieldMat);
+        field.rotation.x = -Math.PI / 2;
+        scene.add(field);
+
+        // Linha do Gol
+        const lineGeo = new THREE.PlaneGeometry(10, 0.2);
+        const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const line = new THREE.Mesh(lineGeo, lineMat);
+        line.rotation.x = -Math.PI / 2;
+        line.position.set(0, 0.01, -15);
+        scene.add(line);
+
+        // Traves do Gol
+        const postGeo = new THREE.CylinderGeometry(0.2, 0.2, 4);
+        const postMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        const leftPost = new THREE.Mesh(postGeo, postMat);
+        leftPost.position.set(-5, 2, -15);
+        const rightPost = new THREE.Mesh(postGeo, postMat);
+        rightPost.position.set(5, 2, -15);
+        const topPostGeo = new THREE.CylinderGeometry(0.2, 0.2, 10.4);
+        const topPost = new THREE.Mesh(topPostGeo, postMat);
+        topPost.rotation.z = Math.PI / 2;
+        topPost.position.set(0, 4, -15);
+        scene.add(leftPost); scene.add(rightPost); scene.add(topPost);
+
+        // Goleiro (Cubo vermelho)
+        const gkGeo = new THREE.BoxGeometry(2, 3, 1);
+        const gkMat = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        const gk = new THREE.Mesh(gkGeo, gkMat);
+        gk.position.set(0, 1.5, -14);
+        scene.add(gk);
+
+        // Bola de Futebol
+        const ballGeo = new THREE.SphereGeometry(0.5, 32, 32);
+        const ballMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        const ball = new THREE.Mesh(ballGeo, ballMat);
+        ball.position.set(0, 0.5, 10);
+        scene.add(ball);
+
+        // Posição da Câmera
+        camera.position.set(0, 5, 18);
+        camera.lookAt(0, 0, -15);
+
+        // Lógica do Jogo
+        let isKicked = false;
+        let targetX = 0;
+        let gameWon = false;
+        const clock = new THREE.Clock();
+
+        // Chutar a bola ao clicar
+        window.addEventListener('click', (event) => {
+            if (!isKicked && !gameWon) {
+                // Calcula a direção X do chute baseado onde o usuário clicou na tela
+                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                targetX = mouseX * 8; // Mapeia para a largura do gol
+                isKicked = true;
+            }
+        });
+
+        // Responsividade
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        function resetBall() {
+            setTimeout(() => {
+                ball.position.set(0, 0.5, 10);
+                isKicked = false;
+                document.getElementById('status-text').innerText = "DEFESA! Tente novamente!";
+                document.getElementById('status-text').style.color = "#ff4444";
+            }, 500);
+        }
+
+        function triggerGoal() {
+            gameWon = true;
+            document.getElementById('status-text').innerText = "GOOOOOOOL!!!";
+            document.getElementById('status-text').style.color = "#00ff00";
+            
+            setTimeout(() => {
+                // Esconde o jogo
+                document.getElementById('canvas-container').style.opacity = '0';
+                document.getElementById('game-ui').style.opacity = '0';
+                
+                // Mostra o portfólio depois do fade out
+                setTimeout(() => {
+                    document.getElementById('canvas-container').style.display = 'none';
+                    document.getElementById('game-ui').style.display = 'none';
+                    
+                    const port = document.getElementById('portfolio');
+                    port.classList.add('show-portfolio');
+                    document.body.style.overflow = 'auto'; // Volta a rolagem da página
+                }, 1000);
+            }, 1500);
+        }
+
+        // Loop de Animação
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!gameWon) {
+                const elapsedTime = clock.getElapsedTime();
+                
+                // Movimento do Goleiro (Vai e vem)
+                gk.position.x = Math.sin(elapsedTime * 2) * 4;
+
+                // Lógica da Bola se chutada
+                if (isKicked) {
+                    ball.position.z -= 0.6; // Velocidade para frente
+                    
+                    // Movimento lateral em direção ao alvo clicado
+                    if (Math.abs(ball.position.x - targetX) > 0.1) {
+                        ball.position.x += (targetX > ball.position.x) ? 0.1 : -0.1;
+                    }
+                    
+                    // Rotação da bola para efeito visual
+                    ball.rotation.x -= 0.1;
+
+                    // Colisão com o Goleiro
+                    if (ball.position.z <= gk.position.z + 1 && ball.position.z >= gk.position.z - 1) {
+                        if (Math.abs(ball.position.x - gk.position.x) < 1.5) { // Goleiro defendeu
+                            isKicked = false;
+                            resetBall();
+                        }
+                    }
+
+                    // Verifica se passou da linha do Gol
+                    if (ball.position.z < -15 && isKicked) {
+                        isKicked = false; // Para a bola
+                        if (ball.position.x > -4.5 && ball.position.x < 4.5) {
+                            triggerGoal(); // Gol válido!
+                        } else {
+                            // Chutou pra fora
+                            document.getElementById('status-text').innerText = "PRA FORA! Tente de novo!";
+                            document.getElementById('status-text').style.color = "#ffaa00";
+                            resetBall();
+                        }
+                    }
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
