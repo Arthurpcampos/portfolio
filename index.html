@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>JAVA FIGHTER II: ULTIMATE ARCADE</title>
+    <title>JAVA FIGHTER II: UNIQUE ARCADE</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #ffcc00; --red: #ff3131; --blue: #00d2ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #111; font-family: 'Press Start 2P', cursive; color: white; overflow: hidden; user-select: none; }
 
-        /* UI SCREENS */
         .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; background: rgba(0,0,0,0.9); }
         .active { display: flex; }
         
-        #start-screen { background: radial-gradient(circle, #331100 0%, #000 100%); }
-        .title-box { background: rgba(0,0,0,0.8); padding: 40px; border: 4px solid var(--gold); box-shadow: 0 0 30px var(--gold); text-align: center; }
-        .title { font-size: 45px; color: #fff; text-shadow: 5px 5px var(--red); margin-bottom: 20px; }
+        #start-screen { background: radial-gradient(circle, #220033 0%, #000 100%); }
+        .title-box { background: rgba(0,0,0,0.8); padding: 40px; border: 4px solid var(--gold); box-shadow: 0 0 30px var(--blue); text-align: center; }
+        .title { font-size: 45px; color: #fff; text-shadow: 5px 5px var(--blue); margin-bottom: 20px; }
 
-        /* CHARACTER SELECT */
+        /* GRIDS DE SELEÇÃO */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
-        .card { position: relative; width: 200px; height: 100px; border: 4px solid #444; cursor: pointer; transition: 0.2s; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card:hover { border-color: var(--gold); transform: scale(1.1); background: #333; }
-        .card h3 { font-size: 14px; margin-bottom: 5px; }
-        .card p { font-size: 9px; color: var(--blue); }
+        .card { position: relative; width: 180px; height: 200px; border: 4px solid #444; cursor: pointer; transition: 0.2s; background: #222; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; }
+        .card:hover { border-color: var(--gold); transform: scale(1.1); background: #333; z-index: 10; }
+        .card-canvas { width: 100%; height: 120px; background: #111; border: 2px solid #000; image-rendering: pixelated; }
+        .card h3 { font-size: 12px; margin-top: 5px; color: #fff; text-align: center; }
+        .card p { font-size: 8px; color: var(--blue); text-align: center; }
 
-        /* ARENA HUD */
+        /* HUD */
         #hud { position: absolute; top: 0; width: 100%; display: none; justify-content: space-between; padding: 30px 50px; z-index: 50; }
         .health-slot { width: 40%; }
-        .bar-bg { height: 35px; background: #222; border: 4px solid #fff; position: relative; box-shadow: 0 0 10px #000; }
+        .bar-bg { height: 35px; background: #222; border: 4px solid #fff; box-shadow: 0 0 10px #000; }
         .bar-fill { height: 100%; width: 100%; transition: width 0.2s; }
         #hp-p1 { background: linear-gradient(to bottom, #00ff00, #005500); float: right; }
         #hp-p2 { background: linear-gradient(to bottom, #ff0000, #550000); }
@@ -36,15 +36,14 @@
 
         .btn { padding: 15px 30px; border: 4px solid #fff; background: #004e92; color: #fff; cursor: pointer; font-family: inherit; margin: 10px; }
         .btn:hover { background: var(--red); }
-
-        canvas { display: block; }
+        canvas#game { display: block; image-rendering: pixelated; }
     </style>
 </head>
 <body>
 
     <div id="start-screen" class="screen active">
         <div class="title-box">
-            <h1 class="title">JAVA FIGHTER II<br><span style="font-size: 18px; color: var(--gold);">CHAMPION EDITION</span></h1>
+            <h1 class="title">JAVA FIGHTER II<br><span style="font-size: 18px; color: var(--gold);">UNIQUE ROSTER</span></h1>
             <button class="btn" onclick="showSelect()">INSERT COIN</button>
         </div>
     </div>
@@ -56,33 +55,19 @@
 
     <div id="arena-screen" class="screen">
         <h2>CHOOSE BATTLEGROUND</h2>
-        <div class="grid" id="arena-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+        <div class="grid" id="arena-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
     </div>
 
     <div id="result-screen" class="screen">
         <h1 id="winner-text" style="font-size: 50px; color: var(--gold); margin-bottom: 40px;">WINNER</h1>
         <div>
             <button class="btn" onclick="location.reload()">MAIN MENU</button>
-            <button id="btn-port" class="btn" style="display:none; background:#22c55e;" onclick="showPortfolio()">MY PORTFOLIO</button>
         </div>
-    </div>
-
-    <div id="portfolio-screen" class="screen" style="text-align: left; padding: 80px; align-items: flex-start; background: #0f172a;">
-        <h1 style="color: var(--gold); border-bottom: 4px solid #fff; padding-bottom: 20px; width: 100%;">DEV_RESUME.DAT</h1>
-        <div style="margin-top: 30px; border-left: 5px solid var(--blue); padding-left: 20px;">
-            <h3 style="color: var(--blue); margin-bottom: 10px;">SKILL: JAVA / BACKEND</h3>
-            <p style="line-height: 1.5;">Expert in object-oriented programming, scalable APIs, and system architecture.</p>
-        </div>
-        <div style="margin-top: 30px; border-left: 5px solid var(--blue); padding-left: 20px;">
-            <h3 style="color: var(--blue); margin-bottom: 10px;">SKILL: HTML5 CANVAS 2D</h3>
-            <p style="line-height: 1.5;">Creating complex procedural graphics and game engines from scratch without external image dependencies.</p>
-        </div>
-        <button class="btn" onclick="location.reload()" style="margin-top: 40px;">EXIT</button>
     </div>
 
     <div id="hud">
         <div class="health-slot">
-            <div id="name1" style="margin-bottom: 10px; color: #fff;">PLAYER</div>
+            <div id="name1" style="margin-bottom: 10px; color: #fff;">P1</div>
             <div class="bar-bg"><div id="hp-p1" class="bar-fill"></div></div>
         </div>
         <div id="round-txt" style="font-size: 25px; margin-top: 10px; color: var(--gold); text-shadow: 2px 2px #000;">ROUND 1</div>
@@ -104,21 +89,23 @@
         let p1Wins = 0, p2Wins = 0, round = 1;
         let shake = 0;
 
-        // Dados dos Lutadores (Com roupas e peles diferentes)
+        // PERSONAGENS (Diferentes Tipos)
         const fighters = [
-            { name: 'RYU-JAVA', shirt: '#ffffff', pants: '#ffffff', skin: '#ffcc99', detail: '#ff0000', power: 'HADOUKEN' },
-            { name: 'KODER-KEN', shirt: '#ff3300', pants: '#ff3300', skin: '#ffcc99', detail: '#ffff00', power: 'SHORYUKEN' },
-            { name: 'CYBER-X', shirt: '#333333', pants: '#111111', skin: '#9999ff', detail: '#00ffff', power: 'GLITCH' },
-            { name: 'NULL-BOT', shirt: '#555555', pants: '#333333', skin: '#aaaaaa', detail: '#ff00ff', power: 'VOID' },
-            { name: 'BIT-NINJA', shirt: '#0033aa', pants: '#002288', skin: '#eebbaa', detail: '#ffffff', power: 'STEALTH' },
-            { name: 'MASTER-C', shirt: '#005500', pants: '#004400', skin: '#664422', detail: '#ffcc00', power: 'POINTER' }
+            { id: 'human', name: 'RYU-JAVA', color1: '#ffffff', color2: '#ff0000', skin: '#ffcc99', desc: 'CLASSIC FIGHTER' },
+            { id: 'robot', name: 'MECHA-K', color1: '#778899', color2: '#ffff00', skin: '#444444', desc: 'HEAVY ARMOR' },
+            { id: 'ninja', name: 'NINJA-VOID', color1: '#222222', color2: '#ff00ff', skin: '#ffcc99', desc: 'FAST ASSASSIN' },
+            { id: 'beast', name: 'BEAST-BYTE', color1: '#006600', color2: '#003300', skin: '#00aa00', desc: 'BRUTE FORCE' },
+            { id: 'slime', name: 'SLIME-C', color1: '#00ffff', color2: '#008888', skin: '#00ffff', desc: 'TOXIC BODY' },
+            { id: 'lady', name: 'LADY-LOGIC', color1: '#ff66b2', color2: '#ffffff', skin: '#ffcc99', desc: 'SWIFT KICKS' }
         ];
 
-        // Dados dos Mapas (Procedurais)
+        // MAPAS
         const stages = [
-            { name: 'SUN TEMPLE', type: 'temple', skyTop: '#ff4400', skyBot: '#ffaa00', floor: '#4d2600' },
-            { name: 'NEON CITY', type: 'city', skyTop: '#000022', skyBot: '#330044', floor: '#1a1a2e' },
-            { name: 'ICE TUNDRA', type: 'ice', skyTop: '#aaeeff', skyBot: '#ffffff', floor: '#e6f2ff' }
+            { name: 'TEMPLE', type: 'temple', skyTop: '#ff4400', skyBot: '#ffaa00', floor: '#4d2600' },
+            { name: 'CITY', type: 'city', skyTop: '#000022', skyBot: '#330044', floor: '#1a1a2e' },
+            { name: 'ICE', type: 'ice', skyTop: '#aaeeff', skyBot: '#ffffff', floor: '#e6f2ff' },
+            { name: 'SEWER', type: 'sewer', skyTop: '#002200', skyBot: '#004400', floor: '#113311' },
+            { name: 'VOLCANO', type: 'volcano', skyTop: '#330000', skyBot: '#aa0000', floor: '#220000' }
         ];
 
         function showScreen(id) {
@@ -126,6 +113,7 @@
             if(id !== 'none') document.getElementById(id).classList.add('active');
         }
 
+        // --- SISTEMA DE GERAÇÃO DE FOTOS ---
         function showSelect() {
             showScreen('select-screen');
             const grid = document.getElementById('char-grid');
@@ -133,10 +121,14 @@
             fighters.forEach(f => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.style.borderLeft = `10px solid ${f.shirt}`;
-                div.innerHTML = `<h3>${f.name}</h3><p>${f.power}</p>`;
+                div.innerHTML = `<canvas class="card-canvas" width="100" height="120"></canvas>
+                                 <h3>${f.name}</h3><p>${f.desc}</p>`;
                 div.onclick = () => { p1Data = f; showStageSelect(); };
                 grid.appendChild(div);
+                
+                // Desenha a foto no mini canvas
+                const miniCtx = div.querySelector('canvas').getContext('2d');
+                drawFighterShape(miniCtx, f, 50, 90, 1, 0, 'idle');
             });
         }
 
@@ -147,10 +139,15 @@
             stages.forEach(s => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.style.background = `linear-gradient(${s.skyTop}, ${s.skyBot})`;
-                div.innerHTML = `<h3 style="color:#fff; text-shadow: 2px 2px #000;">${s.name}</h3>`;
+                div.style.width = '140px';
+                div.innerHTML = `<canvas class="card-canvas" width="120" height="80"></canvas>
+                                 <h3>${s.name}</h3>`;
                 div.onclick = () => { activeStage = s; startFight(); };
                 grid.appendChild(div);
+
+                // Desenha a foto do mapa
+                const miniCtx = div.querySelector('canvas').getContext('2d');
+                drawStageBackground(miniCtx, s, 120, 80);
             });
         }
 
@@ -164,20 +161,11 @@
             document.getElementById('name1').innerText = p1Data.name;
             document.getElementById('name2').innerText = p2Data.name;
 
-            p1 = createPlayer(200, p1Data, 1);
-            p2 = createPlayer(canvas.width - 300, p2Data, -1);
+            p1 = { x: 200, y: canvas.height - 350, w: 100, h: 220, data: p1Data, dir: 1, hp: 100, vy: 0, jumping: false, state: 'idle', frame: 0 };
+            p2 = { x: canvas.width - 300, y: canvas.height - 350, w: 100, h: 220, data: p2Data, dir: -1, hp: 100, vy: 0, jumping: false, state: 'idle', frame: 0 };
             
             gameState = 'FIGHT';
             requestAnimationFrame(gameLoop);
-        }
-
-        function createPlayer(x, data, dir) {
-            return {
-                x, y: canvas.height - 350, w: 100, h: 220,
-                data: data, dir: dir, hp: 100, vy: 0, 
-                jumping: false, attacking: false, 
-                frame: 0, state: 'idle'
-            };
         }
 
         const keys = {};
@@ -190,8 +178,7 @@
 
             if(gameState === 'FIGHT') {
                 handleInput();
-                applyPhysics(p1);
-                applyPhysics(p2);
+                applyPhysics(p1); applyPhysics(p2);
                 aiLogic();
             }
 
@@ -202,7 +189,7 @@
         function handleInput() {
             if(keys['KeyA'] && p1.x > 50) { p1.x -= 8; p1.state = 'walk'; }
             else if(keys['KeyD'] && p1.x < canvas.width - 150) { p1.x += 8; p1.state = 'walk'; }
-            else { p1.state = 'idle'; }
+            else p1.state = 'idle';
 
             if(keys['KeyW'] && !p1.jumping) { p1.vy = -22; p1.jumping = true; }
             if(keys['KeyJ'] || keys['KeyK']) doAttack(p1, p2);
@@ -210,40 +197,28 @@
 
         function aiLogic() {
             const dist = p2.x - p1.x;
-            if(dist > 160) { p2.x -= 4; p2.state = 'walk'; }
-            else if(dist < -160) { p2.x += 4; p2.state = 'walk'; }
-            else {
-                p2.state = 'idle';
-                if(Math.random() < 0.04) doAttack(p2, p1);
-            }
+            if(dist > 180) { p2.x -= 5; p2.state = 'walk'; }
+            else if(dist < -180) { p2.x += 5; p2.state = 'walk'; }
+            else { p2.state = 'idle'; if(Math.random() < 0.05) doAttack(p2, p1); }
         }
 
         function applyPhysics(p) {
-            p.y += p.vy;
-            p.vy += 1.2; // Gravidade
-            if(p.y > canvas.height - 350) {
-                p.y = canvas.height - 350;
-                p.jumping = false;
-                p.vy = 0;
-            }
+            p.y += p.vy; p.vy += 1.2;
+            if(p.y > canvas.height - 350) { p.y = canvas.height - 350; p.jumping = false; p.vy = 0; }
             p.frame += 0.15;
         }
 
-        function doAttack(attacker, target) {
-            if(attacker.attacking) return;
-            attacker.attacking = true;
-            attacker.state = 'punch';
-            
-            const hit = Math.abs(attacker.x - target.x) < 180 && Math.abs(attacker.y - target.y) < 120;
+        function doAttack(a, t) {
+            if(a.state === 'punch') return;
+            a.state = 'punch';
+            const hit = Math.abs(a.x - t.x) < 200 && Math.abs(a.y - t.y) < 150;
             if(hit) {
-                target.hp -= 12;
-                shake = 20; // Treme a tela
+                t.hp -= 15; shake = 25;
                 document.getElementById('hp-p1').style.width = Math.max(0, p1.hp) + "%";
                 document.getElementById('hp-p2').style.width = Math.max(0, p2.hp) + "%";
-                if(target.hp <= 0) triggerKO();
+                if(t.hp <= 0) triggerKO();
             }
-
-            setTimeout(() => { attacker.attacking = false; attacker.state = 'idle'; }, 250);
+            setTimeout(() => { if(a.state === 'punch') a.state = 'idle'; }, 300);
         }
 
         function triggerKO() {
@@ -252,156 +227,114 @@
             setTimeout(() => {
                 document.getElementById('ko-overlay').style.display = 'none';
                 if(p1.hp <= 0) p2Wins++; else p1Wins++;
-                if(p1Wins === 2 || p2Wins === 2) endMatch();
+                if(p1Wins === 2 || p2Wins === 2) showScreen('result-screen');
                 else nextRound();
             }, 3000);
         }
 
         function nextRound() {
-            round++;
-            document.getElementById('round-txt').innerText = "ROUND " + round;
-            p1.hp = 100; p2.hp = 100;
-            p1.x = 200; p2.x = canvas.width - 300;
-            document.getElementById('hp-p1').style.width = "100%";
-            document.getElementById('hp-p2').style.width = "100%";
+            round++; document.getElementById('round-txt').innerText = "ROUND " + round;
+            p1.hp = 100; p2.hp = 100; p1.x = 200; p2.x = canvas.width - 300;
+            document.getElementById('hp-p1').style.width = "100%"; document.getElementById('hp-p2').style.width = "100%";
             gameState = 'FIGHT';
         }
 
-        function endMatch() {
-            showScreen('result-screen');
-            document.getElementById('hud').style.display = 'none';
-            const txt = document.getElementById('winner-text');
-            if(p1Wins > p2Wins) {
-                txt.innerText = "PLAYER 1 WINS!";
-                document.getElementById('btn-port').style.display = 'inline-block';
-            } else {
-                txt.innerText = "CPU WINS";
-                txt.style.color = "red";
+        // --- DESENHO DOS MAPAS ---
+        function drawStageBackground(c, stageData, w, h) {
+            let sky = c.createLinearGradient(0, 0, 0, h);
+            sky.addColorStop(0, stageData.skyTop); sky.addColorStop(1, stageData.skyBot);
+            c.fillStyle = sky; c.fillRect(0, 0, w, h);
+
+            if(stageData.type === 'temple') {
+                c.fillStyle = '#ff3300'; c.beginPath(); c.arc(w/2, h/2, w/4, 0, Math.PI*2); c.fill();
+                c.fillStyle = '#2a1500'; c.beginPath(); c.moveTo(0, h); c.lineTo(w/3, h/2); c.lineTo(w, h); c.fill();
+            } else if(stageData.type === 'city') {
+                c.fillStyle = '#ffffaa'; c.beginPath(); c.arc(w/4, h/3, w/10, 0, Math.PI*2); c.fill();
+                c.fillStyle = '#0f0f1a';
+                for(let i=0; i<8; i++) { c.fillRect(i*w/8, h/2 + Math.random()*h/4, w/8+2, h); }
+            } else if(stageData.type === 'ice') {
+                c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(0, h); c.lineTo(w/4, h/2); c.lineTo(w/2, h); c.fill();
+                c.fillStyle = '#ccffff'; c.beginPath(); c.moveTo(w/2, h); c.lineTo(w*0.8, h/2); c.lineTo(w, h); c.fill();
+            } else if(stageData.type === 'sewer') {
+                c.fillStyle = '#334433'; c.fillRect(w/4, 0, w/10, h); c.fillRect(w*0.7, 0, w/10, h); // Canos
+                c.fillStyle = '#00ff00'; c.globalAlpha = 0.3; c.fillRect(0, h*0.6, w, h); c.globalAlpha = 1; // Água tóxica
+            } else if(stageData.type === 'volcano') {
+                c.fillStyle = '#ff8800'; c.beginPath(); c.moveTo(0, h); c.lineTo(w/2, h/3); c.lineTo(w, h); c.fill();
+                c.fillStyle = '#ffff00'; c.fillRect(w/2 - 10, h/3, 20, h); // Lava descendo
             }
+            c.fillStyle = stageData.floor; c.fillRect(0, h - h/5, w, h/5);
         }
 
-        // DESENHO PROCEDURAL AVANÇADO
         function drawScene() {
-            ctx.save();
-            ctx.translate(Math.random()*shake, Math.random()*shake); // Screen shake
-
-            // Fundo de Céu (Gradiente)
-            let sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            sky.addColorStop(0, activeStage.skyTop);
-            sky.addColorStop(1, activeStage.skyBot);
-            ctx.fillStyle = sky;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Detalhes do Cenário
-            if(activeStage.type === 'temple') {
-                ctx.fillStyle = '#ff3300'; // Sol
-                ctx.beginPath(); ctx.arc(canvas.width/2, 250, 120, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#2a1500'; // Montanhas
-                ctx.beginPath(); ctx.moveTo(0, canvas.height); ctx.lineTo(300, 200); ctx.lineTo(600, canvas.height); ctx.fill();
-                ctx.beginPath(); ctx.moveTo(canvas.width, canvas.height); ctx.lineTo(canvas.width-400, 150); ctx.lineTo(300, canvas.height); ctx.fill();
-            } else if(activeStage.type === 'city') {
-                ctx.fillStyle = '#ffffaa'; // Lua
-                ctx.beginPath(); ctx.arc(200, 150, 60, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#0f0f1a'; // Prédios
-                for(let i=0; i<15; i++) {
-                    let h = 200 + Math.random()*200;
-                    ctx.fillRect(i*120, canvas.height - h, 100, h);
-                    ctx.fillStyle = '#ffff00'; // Janelas
-                    if(i%2===0) ctx.fillRect(i*120 + 20, canvas.height - h + 50, 20, 20);
-                    ctx.fillStyle = '#0f0f1a';
-                }
-            } else if(activeStage.type === 'ice') {
-                ctx.fillStyle = '#ffffff'; // Geleiras
-                ctx.beginPath(); ctx.moveTo(0, canvas.height); ctx.lineTo(250, 300); ctx.lineTo(500, canvas.height); ctx.fill();
-                ctx.fillStyle = '#ccffff';
-                ctx.beginPath(); ctx.moveTo(canvas.width, canvas.height); ctx.lineTo(canvas.width-300, 250); ctx.lineTo(canvas.width-700, canvas.height); ctx.fill();
-            }
-
-            // Chão
-            ctx.fillStyle = activeStage.floor;
-            ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
-            ctx.fillStyle = 'rgba(0,0,0,0.3)'; // Linha de sombra do chão
-            ctx.fillRect(0, canvas.height - 120, canvas.width, 10);
-
-            drawFighter(p1);
-            drawFighter(p2);
-
+            ctx.save(); ctx.translate(Math.random()*shake, Math.random()*shake);
+            drawStageBackground(ctx, activeStage, canvas.width, canvas.height);
+            drawFighterShape(ctx, p1.data, p1.x + p1.w/2, p1.y + p1.h, p1.dir, p1.frame, p1.state);
+            drawFighterShape(ctx, p2.data, p2.x + p2.w/2, p2.y + p2.h, p2.dir, p2.frame, p2.state);
             ctx.restore();
         }
 
-        // Função para escurecer cor (para sombra das pernas/braços traseiros)
-        function darken(color) {
-            return '#111111'; // Simplificado para garantir contraste da silhueta traseira
-        }
+        // --- DESENHO DOS PERSONAGENS CRIATIVOS ---
+        function drawFighterShape(c, data, x, y, dir, frame, state) {
+            c.save(); c.translate(x, y); if(dir === -1) c.scale(-1, 1);
+            let b = (state === 'idle' || state === 'walk') ? Math.sin(frame) * 4 : 0;
+            let w = (state === 'walk') ? Math.sin(frame * 2) * 15 : 0;
+            let punch = (state === 'punch');
 
-        function drawFighter(p) {
-            ctx.save();
-            ctx.translate(p.x + p.w/2, p.y + p.h/2);
-            if(p.dir === -1) ctx.scale(-1, 1);
+            // Sombra
+            c.fillStyle = 'rgba(0,0,0,0.5)'; c.beginPath(); c.ellipse(0, 0, 40, 10, 0, 0, Math.PI*2); c.fill();
 
-            let bounce = (p.state === 'idle' || p.state === 'walk') ? Math.sin(p.frame) * 4 : 0;
-            let walkAnim = (p.state === 'walk') ? Math.sin(p.frame * 2) * 15 : 0;
-
-            // Sombra no chão
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            ctx.beginPath(); ctx.ellipse(0, 100, 50, 15, 0, 0, Math.PI*2); ctx.fill();
-
-            // --- BRAÇO DE TRÁS (Escuro) ---
-            ctx.fillStyle = darken(p.data.skin);
-            ctx.fillRect(15, -60 + bounce, 25, 70); 
-
-            // --- PERNA DE TRÁS (Escura) ---
-            ctx.fillStyle = darken(p.data.pants);
-            ctx.fillRect(-30 + walkAnim, 20, 35, 80);
-
-            // --- TRONCO (Camisa) ---
-            ctx.fillStyle = p.data.shirt;
-            ctx.fillRect(-40, -80 + bounce, 80, 100);
-
-            // --- FAIXA/CINTO ---
-            ctx.fillStyle = p.data.detail;
-            ctx.fillRect(-45, 10 + bounce, 90, 15);
-
-            // --- PERNA DA FRENTE (Cor normal) ---
-            ctx.fillStyle = p.data.pants;
-            ctx.fillRect(5 - walkAnim, 20, 35, 80);
-
-            // --- CABEÇA ---
-            ctx.fillStyle = p.data.skin;
-            ctx.fillRect(-30, -140 + bounce, 60, 60);
-
-            // --- DETALHES DO ROSTO ---
-            ctx.fillStyle = '#ffffff'; // Olho branco
-            ctx.fillRect(10, -125 + bounce, 15, 10);
-            ctx.fillStyle = '#000000'; // Pupila
-            ctx.fillRect(18, -125 + bounce, 7, 10);
-            ctx.beginPath(); // Sobrancelha de "bravo"
-            ctx.moveTo(5, -135 + bounce); ctx.lineTo(30, -125 + bounce); ctx.lineTo(30, -130 + bounce); ctx.fill();
-
-            // Faixa na cabeça
-            ctx.fillStyle = p.data.detail;
-            ctx.fillRect(-35, -135 + bounce, 70, 12);
-            ctx.fillRect(-45, -135 + bounce, 10, 25); // Ponto da faixa voando
-
-            // --- BRAÇO DA FRENTE ---
-            if(p.state === 'punch') {
-                // Braço esticado dando soco
-                ctx.fillStyle = p.data.shirt; // Manga
-                ctx.fillRect(0, -65 + bounce, 40, 30);
-                ctx.fillStyle = p.data.skin;  // Punho
-                ctx.fillRect(40, -65 + bounce, 60, 25);
-            } else {
-                // Posição de Guarda (Braço dobrado pra cima)
-                ctx.fillStyle = p.data.shirt; // Manga
-                ctx.fillRect(-15, -60 + bounce, 35, 45);
-                ctx.fillStyle = p.data.skin;  // Punho na frente do rosto
-                ctx.fillRect(-10, -90 + bounce, 25, 30);
+            if(data.id === 'human') {
+                c.fillStyle = '#111'; c.fillRect(15, -60+b, 20, 60); // Braço trás
+                c.fillStyle = '#111'; c.fillRect(-25+w, -80, 25, 80); // Perna trás
+                c.fillStyle = data.color1; c.fillRect(-35, -150+b, 70, 90); // Corpo
+                c.fillStyle = data.color2; c.fillRect(-40, -70+b, 80, 15); // Faixa
+                c.fillStyle = data.color1; c.fillRect(5-w, -80, 25, 80); // Perna frente
+                c.fillStyle = data.skin; c.fillRect(-25, -200+b, 50, 50); // Cabeça
+                c.fillStyle = data.color2; c.fillRect(-30, -195+b, 60, 10); // Bandana
+                if(punch) { c.fillStyle = data.color1; c.fillRect(0, -130+b, 80, 25); c.fillStyle=data.skin; c.fillRect(80,-130+b, 20,25); } 
+                else { c.fillStyle = data.color1; c.fillRect(-10, -130+b, 25, 45); }
+            
+            } else if(data.id === 'robot') {
+                c.fillStyle = data.color1; c.fillRect(-50, -180+b, 100, 120); // Corpo Quadrado
+                c.fillStyle = data.color2; c.beginPath(); c.arc(0, -140+b, 20, 0, Math.PI*2); c.fill(); // Olho
+                c.fillStyle = '#333'; c.fillRect(-30+w, -60, 25, 60); c.fillRect(10-w, -60, 25, 60); // Pernas grossas
+                if(punch) { c.fillStyle = data.color1; c.fillRect(40, -150+b, 100, 40); } // Soco robótico
+                else { c.fillStyle = data.color1; c.fillRect(20, -120+b, 30, 60); }
+            
+            } else if(data.id === 'ninja') {
+                c.fillStyle = data.color1; c.fillRect(-20, -140+b, 40, 80); // Corpo fino
+                c.fillStyle = data.color2; c.fillRect(-60, -130+b+w, 50, 15); // Cachecol ao vento
+                c.fillStyle = data.color1; c.fillRect(-15+w, -60, 15, 60); c.fillRect(5-w, -60, 15, 60); // Pernas
+                c.fillStyle = data.color1; c.beginPath(); c.arc(0, -160+b, 25, 0, Math.PI*2); c.fill(); // Cabeça
+                c.fillStyle = data.skin; c.fillRect(-10, -165+b, 25, 10); // Olhos aparecendo
+                if(punch) { c.fillStyle = data.color1; c.fillRect(10, -130+b, 80, 15); } // Soco rápido
+                else { c.fillStyle = data.color1; c.fillRect(-5, -120+b, 15, 40); }
+            
+            } else if(data.id === 'beast') {
+                c.fillStyle = data.color1; c.beginPath(); c.ellipse(0, -120+b, 70, 60, 0, 0, Math.PI*2); c.fill(); // Corcunda
+                c.fillStyle = data.color2; c.fillRect(-40+w, -60, 30, 60); c.fillRect(10-w, -60, 30, 60); // Pernas de besta
+                c.fillStyle = data.skin; c.fillRect(30, -160+b, 40, 40); // Cabeça pra frente
+                c.fillStyle = '#fff'; c.beginPath(); c.moveTo(50, -160+b); c.lineTo(40, -190+b); c.lineTo(60, -160+b); c.fill(); // Chifre
+                if(punch) { c.fillStyle = data.color1; c.fillRect(40, -100+b, 90, 40); } // Soco pesado
+                else { c.fillStyle = data.color1; c.fillRect(20, -100+b, 40, 70); }
+            
+            } else if(data.id === 'slime') {
+                c.fillStyle = data.color1; 
+                c.beginPath(); c.ellipse(0, -50+b, 60+Math.abs(w), 50-b, 0, 0, Math.PI*2); c.fill(); // Base gosma
+                c.beginPath(); c.ellipse(0, -120-b, 40, 60, 0, 0, Math.PI*2); c.fill(); // Topo gosma
+                c.fillStyle = data.color2; c.beginPath(); c.arc(10, -140-b, 10, 0, Math.PI*2); c.fill(); // Olho boiando
+                if(punch) { c.fillStyle = data.color1; c.beginPath(); c.ellipse(60, -80, 60, 20, 0, 0, Math.PI*2); c.fill(); } // Tentáculo
+            
+            } else if(data.id === 'lady') {
+                c.fillStyle = data.color1; c.fillRect(-20, -140+b, 40, 70); // Corpo elegante
+                c.fillStyle = data.color2; c.fillRect(-25+w, -70, 20, 70); c.fillRect(5-w, -70, 20, 70); // Pernas longas
+                c.fillStyle = data.skin; c.beginPath(); c.arc(0, -160+b, 20, 0, Math.PI*2); c.fill(); // Cabeça
+                c.fillStyle = data.color1; c.beginPath(); c.ellipse(-30, -150+b+w, 20, 10, -Math.PI/4, 0, Math.PI*2); c.fill(); // Rabo de cavalo
+                if(punch) { c.fillStyle = data.color2; c.fillRect(10, -70, 90, 20); } // Chute longo
+                else { c.fillStyle = data.skin; c.fillRect(-5, -120+b, 15, 35); }
             }
-
-            ctx.restore();
+            c.restore();
         }
-
-        function showPortfolio() { showScreen('portfolio-screen'); }
     </script>
 </body>
 </html>
