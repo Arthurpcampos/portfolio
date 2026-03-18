@@ -57,17 +57,158 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
 .res-btn:hover{border-color:#ffcc00;color:#ffcc00;}
 .res-btn.primary{background:#660011;border-color:#ff2244;color:#fff;}
 .res-btn.primary:hover{background:#ffcc00;color:#000;border-color:#ffcc00;}
-#portfolio-screen{background:#030310;overflow-y:auto;align-items:flex-start;padding:55px 75px;}
-.port-hdr{width:100%;padding-bottom:14px;margin-bottom:28px;border-bottom:3px solid #ffcc00;display:flex;justify-content:space-between;align-items:center;}
-.port-hdr h1{font-size:15px;color:#ffcc00;}
-.psec{margin-bottom:22px;width:100%;}
-.psec h2{font-size:10px;color:#00d4ff;margin-bottom:12px;letter-spacing:4px;}
-.pcard{background:#07070f;border-left:5px solid #00d4ff;padding:14px 18px;margin-bottom:10px;}
-.pcard h3{font-size:8px;color:#fff;margin-bottom:7px;}
-.pcard p{font-size:6px;color:#888;line-height:2;}
-.tag{display:inline-block;background:#0a0a18;border:1px solid #1a1a30;font-size:5px;color:#00d4ff;padding:4px 7px;margin:2px;}
-.port-back{font-family:'Press Start 2P',cursive;font-size:8px;background:#660011;color:#fff;border:3px solid #ff2244;padding:11px 22px;cursor:pointer;margin-top:18px;}
-.port-back:hover{background:#ffcc00;color:#000;}
+/* ═══ PORTFOLIO SCREEN ═══ */
+#portfolio-screen{
+  background:#000;
+  overflow-y:auto;overflow-x:hidden;
+  align-items:flex-start;justify-content:flex-start;
+  padding:0;
+}
+#portfolio-screen canvas#port-canvas{
+  position:fixed;inset:0;z-index:0;
+  image-rendering:pixelated;
+  pointer-events:none;
+}
+.port-wrap{
+  position:relative;z-index:10;
+  width:100%;max-width:1100px;
+  margin:0 auto;
+  padding:52px 60px 80px;
+}
+
+/* ── HEADER ── */
+.port-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  border-bottom:3px solid #ffcc00;
+  padding-bottom:18px;margin-bottom:44px;
+  position:relative;
+}
+.port-header::after{
+  content:'';position:absolute;bottom:-6px;left:0;width:100%;height:3px;
+  background:linear-gradient(90deg,#ffcc0066,transparent);
+}
+.port-name{
+  font-size:32px;color:#fff;letter-spacing:2px;line-height:1.2;
+  text-shadow:0 0 30px #ffcc0066,4px 4px 0 #884400;
+}
+.port-name span{color:#ffcc00;}
+.port-role{
+  font-size:9px;color:#888;margin-top:8px;letter-spacing:4px;
+  text-transform:uppercase;
+}
+.port-back-btn{
+  font-family:'Press Start 2P',cursive;font-size:8px;
+  background:transparent;color:#ffcc00;
+  border:2px solid #ffcc0066;
+  padding:10px 18px;cursor:pointer;
+  letter-spacing:2px;transition:.15s;
+  white-space:nowrap;
+}
+.port-back-btn:hover{background:#ffcc00;color:#000;border-color:#ffcc00;}
+
+/* ── SECTION LABELS ── */
+.port-section-label{
+  font-size:8px;color:#ffcc00;letter-spacing:6px;
+  margin-bottom:20px;display:flex;align-items:center;gap:12px;
+}
+.port-section-label::after{
+  content:'';flex:1;height:2px;
+  background:linear-gradient(90deg,#ffcc0044,transparent);
+}
+
+/* ── SKILLS GRID ── */
+.skills-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  margin-bottom:44px;
+}
+.skill-card{
+  background:#07070f;
+  border:2px solid #1a1a2e;
+  padding:20px 22px 18px;
+  position:relative;overflow:hidden;
+  transition:border-color .2s,transform .15s;
+}
+.skill-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--skill-color,#00d4ff);
+  box-shadow:0 0 12px var(--skill-color,#00d4ff);
+}
+.skill-card:hover{border-color:var(--skill-color,#00d4ff);transform:translateY(-3px);}
+.skill-icon{font-size:22px;margin-bottom:12px;display:block;}
+.skill-name{font-size:9px;color:#fff;letter-spacing:2px;margin-bottom:6px;}
+.skill-sub{font-size:6px;color:#666;line-height:1.9;margin-bottom:14px;}
+/* animated bar */
+.skill-bar-track{
+  height:6px;background:#111;border:1px solid #222;
+  position:relative;overflow:hidden;
+}
+.skill-bar-fill{
+  height:100%;width:0%;
+  background:var(--skill-color,#00d4ff);
+  transition:width 1.4s cubic-bezier(.22,1,.36,1);
+  position:relative;
+}
+.skill-bar-fill::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:8px;
+  background:#fff;opacity:.6;
+  animation:barShine 2s ease-in-out infinite;
+}
+@keyframes barShine{0%,100%{opacity:.3}50%{opacity:.9}}
+.skill-pct{
+  font-size:7px;color:var(--skill-color,#00d4ff);
+  margin-top:6px;display:block;text-align:right;
+}
+.skill-tags{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px;}
+.stag{
+  font-size:5px;color:var(--skill-color,#00d4ff);
+  background:#0a0a18;border:1px solid var(--skill-color,#00d4ff33);
+  padding:3px 7px;letter-spacing:1px;
+}
+
+/* ── PROJECTS GRID ── */
+.projects-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  margin-bottom:44px;
+}
+.proj-card{
+  background:#07070f;border:2px solid #1a1a2e;
+  padding:22px 20px;
+  position:relative;overflow:hidden;
+  transition:border-color .2s,transform .15s;
+  min-height:160px;
+}
+.proj-card:hover{border-color:#ffcc0066;transform:translateY(-3px);}
+.proj-card.empty{
+  border:2px dashed #1e1e30;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:default;opacity:.5;
+}
+.proj-card.empty:hover{transform:none;border-color:#2a2a44;}
+.proj-empty-icon{font-size:28px;margin-bottom:10px;opacity:.4;}
+.proj-empty-txt{font-size:6px;color:#444;letter-spacing:2px;}
+.proj-number{
+  font-size:28px;color:#ffffff08;position:absolute;
+  bottom:10px;right:14px;line-height:1;
+}
+.proj-tag-top{
+  font-size:5px;color:#ffcc00;letter-spacing:2px;
+  margin-bottom:10px;display:block;
+  border-left:3px solid #ffcc00;padding-left:8px;
+}
+.proj-title{font-size:9px;color:#fff;margin-bottom:8px;letter-spacing:1px;}
+.proj-desc{font-size:6px;color:#777;line-height:2;margin-bottom:12px;}
+.proj-techs{display:flex;flex-wrap:wrap;gap:4px;}
+.ptag{font-size:5px;color:#aaa;background:#111;border:1px solid #333;padding:3px 7px;}
+
+/* ── FOOTER BAR ── */
+.port-footer{
+  border-top:2px solid #1a1a2e;
+  padding-top:22px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;
+}
+.port-footer-txt{font-size:6px;color:#333;letter-spacing:3px;}
+.port-footer-txt span{color:#ffcc0066;}
 </style>
 </head>
 <body>
@@ -111,37 +252,123 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;
   <button class="res-btn" onclick="location.reload()">MENU PRINCIPAL</button>
 </div>
 <div id="portfolio-screen" class="screen">
-  <div class="port-hdr"><h1>[ ENGINEER_PORTFOLIO.LOG ]</h1>
-    <button class="port-back" onclick="showScreen('result-screen')">◄ VOLTAR</button></div>
-  <div class="psec"><h2>▸ STACK PRINCIPAL</h2>
-    <div class="pcard"><h3>JAVA &amp; KOTLIN — Backend Architecture</h3>
-      <p>Microsserviços com Spring Boot &amp; Spring Cloud. APIs REST de alta performance, Kafka, Redis, SQL/NoSQL.</p>
-      <div style="margin-top:10px"><span class="tag">Spring Boot</span><span class="tag">Spring Security</span><span class="tag">Hibernate/JPA</span><span class="tag">Kafka</span><span class="tag">Redis</span><span class="tag">Docker</span></div></div>
-    <div class="pcard"><h3>SISTEMAS DISTRIBUÍDOS</h3>
-      <p>Event-Driven Architecture, CQRS, circuit breakers, resiliência e alta disponibilidade.</p>
-      <div style="margin-top:10px"><span class="tag">Kubernetes</span><span class="tag">AWS</span><span class="tag">RabbitMQ</span><span class="tag">gRPC</span></div></div>
-  </div>
-  <div class="psec"><h2>▸ GAME DEV — HTML5 CANVAS</h2>
-    <div class="pcard"><h3>JAVA FIGHTER II — Este Jogo!</h3>
-      <p>Engine de luta 2D pixel art: física, sprites procedurais, AI, partículas, efeitos dramáticos por personagem — Vanilla JS + Canvas puro.</p>
-      <div style="margin-top:10px"><span class="tag">HTML5 Canvas</span><span class="tag">Vanilla JS</span><span class="tag">Pixel Art</span><span class="tag">Game Physics</span></div></div>
-  </div>
-  <div class="psec"><h2>▸ METODOLOGIA</h2>
-    <div class="pcard"><h3>CLEAN CODE &amp; DESIGN PATTERNS</h3>
-      <p>SOLID, DRY, Clean Architecture. TDD com JUnit 5. CI/CD e documentação técnica.</p>
-      <div style="margin-top:10px"><span class="tag">TDD</span><span class="tag">SOLID</span><span class="tag">CI/CD</span><span class="tag">Git Flow</span></div></div>
+  <!-- Animated background canvas -->
+  <canvas id="port-canvas"></canvas>
+
+  <div class="port-wrap">
+
+    <!-- HEADER -->
+    <div class="port-header">
+      <div>
+        <div class="port-name">DEV<span>.</span>PORTFOLIO</div>
+        <div class="port-role">Desenvolvedor · Criador · Solucionador</div>
+      </div>
+      <button class="port-back-btn" onclick="showScreen('result-screen')">◄ VOLTAR</button>
+    </div>
+
+    <!-- COMPETÊNCIAS -->
+    <div class="port-section-label">▸ COMPETÊNCIAS</div>
+    <div class="skills-grid" id="skills-grid">
+
+      <div class="skill-card" style="--skill-color:#ff8800">
+        <span class="skill-icon">☕</span>
+        <div class="skill-name">JAVA</div>
+        <div class="skill-sub">Desenvolvimento backend robusto, orientação a objetos avançada e arquitetura de sistemas escaláveis.</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" data-pct="88"></div></div>
+        <span class="skill-pct" data-pct="88">0%</span>
+        <div class="skill-tags">
+          <span class="stag">OOP</span><span class="stag">Spring</span>
+          <span class="stag">JVM</span><span class="stag">Maven</span>
+        </div>
+      </div>
+
+      <div class="skill-card" style="--skill-color:#00d4ff">
+        <span class="skill-icon">🌐</span>
+        <div class="skill-name">HTML &amp; WEB</div>
+        <div class="skill-sub">Criação de interfaces e aplicações web, estruturação semântica e integração com JavaScript e CSS.</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" data-pct="80"></div></div>
+        <span class="skill-pct" data-pct="80">0%</span>
+        <div class="skill-tags">
+          <span class="stag">HTML5</span><span class="stag">CSS3</span>
+          <span class="stag">Canvas</span><span class="stag">DOM</span>
+        </div>
+      </div>
+
+      <div class="skill-card" style="--skill-color:#00ff88">
+        <span class="skill-icon">🗄️</span>
+        <div class="skill-name">BANCO DE DADOS</div>
+        <div class="skill-sub">Modelagem, consultas e otimização de bancos relacionais e não-relacionais para aplicações de alto volume.</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" data-pct="82"></div></div>
+        <span class="skill-pct" data-pct="82">0%</span>
+        <div class="skill-tags">
+          <span class="stag">SQL</span><span class="stag">MySQL</span>
+          <span class="stag">NoSQL</span><span class="stag">Queries</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROJETOS -->
+    <div class="port-section-label">▸ PROJETOS</div>
+    <div class="projects-grid">
+
+      <!-- Projeto real: este jogo -->
+      <div class="proj-card">
+        <span class="proj-number">01</span>
+        <span class="proj-tag-top">GAME DEV</span>
+        <div class="proj-title">JAVA FIGHTER II</div>
+        <div class="proj-desc">Engine de luta 2D completa em pixel art. Sistema de física, IA adversária, 6 personagens únicos com especiais dramáticos, partículas e HUD — tudo em Vanilla JS puro.</div>
+        <div class="proj-techs">
+          <span class="ptag">HTML5 Canvas</span><span class="ptag">JavaScript</span><span class="ptag">Pixel Art</span>
+        </div>
+      </div>
+
+      <!-- Slots para projetos futuros -->
+      <div class="proj-card empty">
+        <div class="proj-empty-icon">＋</div>
+        <div class="proj-empty-txt">PROJETO EM BREVE</div>
+      </div>
+
+      <div class="proj-card empty">
+        <div class="proj-empty-icon">＋</div>
+        <div class="proj-empty-txt">PROJETO EM BREVE</div>
+      </div>
+
+      <div class="proj-card empty">
+        <div class="proj-empty-icon">＋</div>
+        <div class="proj-empty-txt">PROJETO EM BREVE</div>
+      </div>
+
+      <div class="proj-card empty">
+        <div class="proj-empty-icon">＋</div>
+        <div class="proj-empty-txt">PROJETO EM BREVE</div>
+      </div>
+
+      <div class="proj-card empty">
+        <div class="proj-empty-icon">＋</div>
+        <div class="proj-empty-txt">PROJETO EM BREVE</div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="port-footer">
+      <div class="port-footer-txt">© 2025 <span>DEV.PORTFOLIO</span> — Todos os direitos reservados</div>
+      <div class="port-footer-txt"><span>JAVA FIGHTER II</span> · PIXEL ARCADE EDITION</div>
+    </div>
+
   </div>
 </div>
- 
+
 <script>
 // ════════════════════════════════════════════════════════════
 //  JAVA FIGHTER II — VISUAL OVERHAUL ENGINE
 //  All state at top → zero TDZ bugs.
 // ════════════════════════════════════════════════════════════
- 
+
 const PS   = 5;
 const snap = v => Math.round(v / PS) * PS;
- 
+
 // ── ALL STATE DECLARED FIRST ────────────────────────────────
 let gameState   = 'MENU';
 let p1, p2, p1Data, p2Data, activeStage;
@@ -158,18 +385,18 @@ let roundTime   = 99, timerInt = null;
 let koText      = null;
 let previewRaf  = 0, previewFrame = 0;
 let globalFrame = 0;    // increments every gameLoop tick
- 
+
 // ── CANVASES ────────────────────────────────────────────────
 const canvas = document.getElementById('game');
 const ctx    = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
- 
+
 const SC   = document.getElementById('start-canvas');
 const sctx = SC.getContext('2d');
 SC.width   = window.innerWidth;
 SC.height  = window.innerHeight;
 sctx.imageSmoothingEnabled = false;
- 
+
 // ── DRAW HELPERS ────────────────────────────────────────────
 function PX(c, col, x, y, w, h) {
   c.fillStyle = col;
@@ -177,7 +404,7 @@ function PX(c, col, x, y, w, h) {
 }
 // shorthand for main ctx
 function Q(col, x, y, w, h) { PX(ctx, col, x, y, w, h); }
- 
+
 // 8-direction star burst (pixel art)
 function starBurst(c, x, y, r, col, n) {
   const angles = [0,45,90,135,180,225,270,315];
@@ -188,7 +415,7 @@ function starBurst(c, x, y, r, col, n) {
     }
   }
 }
- 
+
 // ── FIGHTER DATA ────────────────────────────────────────────
 const FIGHTERS = [
   { id:'java-ryu',    name:'JAVA-RYU',    desc:'BALANCEADO',
@@ -216,7 +443,7 @@ const FIGHTERS = [
     pal:{SK:'#fcd8b0',Sk:'#c49060',HR:'#220022',GI:'#5a1a5a',Gi:'#3a0a3a',BT:'#ff88cc',bt:'#cc4488',BO:'#cc66aa',EY:'#ff88cc',WH:'#fff',AC:'#ff88cc'},
     doSpecial(p,t){ spLadyStorm(p,t); } }
 ];
- 
+
 const STAGES = [
   {name:'TEMPLO',  bg:['#100300','#2a0600','#600c00'], floor:'#2a1000',tile:'#3a1800',accent:'#ff4400',type:'temple'},
   {name:'CYBER',   bg:['#000008','#00000f','#000820'], floor:'#050510',tile:'#0a0a20',accent:'#00d4ff',type:'city'},
@@ -224,13 +451,13 @@ const STAGES = [
   {name:'TÓXICO',  bg:['#000800','#001100','#002000'], floor:'#040d04',tile:'#0a1a0a',accent:'#00ff44',type:'sewer'},
   {name:'VULCÃO',  bg:['#0d0000','#1c0000','#3c0000'], floor:'#1a0000',tile:'#2a0800',accent:'#ff4400',type:'volcano'}
 ];
- 
+
 // ── INPUT ────────────────────────────────────────────────────
 const keys = {};
 window.addEventListener('keydown', e => { keys[e.code] = true;  e.preventDefault(); });
 window.addEventListener('keyup',   e => { keys[e.code] = false; });
 const NOW = () => performance.now();
- 
+
 // ════════════════════════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════════════════════════
@@ -238,7 +465,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   if (id !== 'none') document.getElementById(id).classList.add('active');
 }
- 
+
 function goToSelect() {
   gameState = 'SELECT';
   showScreen('select-screen');
@@ -270,7 +497,7 @@ function goToSelect() {
     if (gameState === 'SELECT') previewRaf = requestAnimationFrame(loop);
   })();
 }
- 
+
 function goToArena() {
   gameState = 'ARENA';
   showScreen('arena-screen');
@@ -290,7 +517,7 @@ function goToArena() {
     drawStagePreview(cv.getContext('2d'), s, 150, 85);
   });
 }
- 
+
 function showControls() {
   document.getElementById('ctrl-sp-txt').textContent = p1Data.specialName + ' (100 SP)';
   document.getElementById('ctrl-sp-txt').style.color = '#cc44ff';
@@ -298,8 +525,128 @@ function showControls() {
   ov.style.display = 'flex';
   document.getElementById('ctrl-fight-btn').onclick = () => { ov.style.display='none'; startMatch(); };
 }
-function showPortfolio() { showScreen('portfolio-screen'); }
- 
+// ════════════════════════════════════════════════════════════
+//  PORTFOLIO — animated canvas background + skill bar reveal
+// ════════════════════════════════════════════════════════════
+let portRaf = 0, portFrame = 0;
+const PORT_PARTICLES = Array.from({length:80}, () => ({
+  x: Math.random()*1920, y: Math.random()*1080,
+  vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+  size:(Math.floor(Math.random()*3)+1)*4,
+  hue:['#ffcc00','#00d4ff','#ff8800','#00ff88','#cc44ff'][Math.floor(Math.random()*5)]
+}));
+
+function showPortfolio() {
+  showScreen('portfolio-screen');
+
+  // ── Background canvas ──────────────────────────────────
+  const pc   = document.getElementById('port-canvas');
+  pc.width   = window.innerWidth;
+  pc.height  = window.innerHeight;
+  const pctx = pc.getContext('2d');
+  pctx.imageSmoothingEnabled = false;
+
+  // ── Skill bars — staggered entrance ───────────────────
+  setTimeout(() => {
+    document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+    document.querySelectorAll('.skill-pct').forEach(el => {
+      const target = parseInt(el.dataset.pct);
+      let cur = 0;
+      const iv = setInterval(() => {
+        cur = Math.min(target, cur + 2);
+        el.textContent = cur + '%';
+        if (cur >= target) clearInterval(iv);
+      }, 18);
+    });
+  }, 250);
+
+  // ── Card entrance animation ────────────────────────────
+  document.querySelectorAll('.skill-card, .proj-card').forEach((card, i) => {
+    card.style.cssText += 'opacity:0;transform:translateY(20px);transition:opacity .45s ease,transform .45s ease;';
+    setTimeout(() => {
+      card.style.opacity = card.classList.contains('empty') ? '0.45' : '1';
+      card.style.transform = 'translateY(0)';
+    }, 150 + i * 65);
+  });
+
+  // ── Canvas animation loop ──────────────────────────────
+  cancelAnimationFrame(portRaf);
+  portFrame = 0;
+
+  const GC = 22, GR = 13; // grid cols/rows
+
+  function portLoop() {
+    portFrame++;
+    pctx.clearRect(0, 0, pc.width, pc.height);
+
+    // Background radial
+    const bg = pctx.createRadialGradient(pc.width*.5, pc.height*.3, 0, pc.width*.5, pc.height*.5, pc.height);
+    bg.addColorStop(0, '#08081a');
+    bg.addColorStop(1, '#000005');
+    pctx.fillStyle = bg;
+    pctx.fillRect(0, 0, pc.width, pc.height);
+
+    // Dot grid
+    const gw = pc.width/GC, gh = pc.height/GR;
+    for (let gx=0; gx<=GC; gx++) {
+      for (let gy=0; gy<=GR; gy++) {
+        const p = Math.sin(portFrame*.022 + gx*.35 + gy*.28)*.5+.5;
+        pctx.globalAlpha = .05 + p*.08;
+        pctx.fillStyle   = '#ffcc00';
+        pctx.fillRect(Math.round(gx*gw)-1, Math.round(gy*gh)-1, 2, 2);
+      }
+    }
+    pctx.globalAlpha = 1;
+
+    // Slow horizontal scan sweep
+    const sy = (portFrame*.55) % (pc.height+80) - 40;
+    const sg = pctx.createLinearGradient(0, sy-40, 0, sy+40);
+    sg.addColorStop(0, 'transparent');
+    sg.addColorStop(.5, '#ffcc000a');
+    sg.addColorStop(1, 'transparent');
+    pctx.fillStyle = sg;
+    pctx.fillRect(0, sy-40, pc.width, 80);
+
+    // Floating pixel particles
+    for (const p of PORT_PARTICLES) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x<0) p.x=pc.width; if (p.x>pc.width)  p.x=0;
+      if (p.y<0) p.y=pc.height; if (p.y>pc.height) p.y=0;
+      pctx.globalAlpha = .08 + Math.sin(portFrame*.04+p.x*.01)*.12;
+      pctx.fillStyle   = p.hue;
+      pctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+    }
+    pctx.globalAlpha = 1;
+
+    // Corner glow — top left (gold)
+    const cg1 = pctx.createRadialGradient(0, 0, 0, 0, 0, 240);
+    cg1.addColorStop(0, '#ffcc0014'); cg1.addColorStop(1, 'transparent');
+    pctx.fillStyle = cg1; pctx.fillRect(0, 0, 240, 240);
+
+    // Corner glow — bottom right (cyan)
+    const cg2 = pctx.createRadialGradient(pc.width, pc.height, 0, pc.width, pc.height, 260);
+    cg2.addColorStop(0, '#00d4ff10'); cg2.addColorStop(1, 'transparent');
+    pctx.fillStyle = cg2; pctx.fillRect(pc.width-260, pc.height-260, 260, 260);
+
+    // Pulsing top border
+    pctx.globalAlpha = .25 + Math.sin(portFrame*.06)*.2;
+    pctx.fillStyle = '#ffcc00';
+    pctx.fillRect(0, 0, pc.width, 2);
+    // Thin bottom border
+    pctx.globalAlpha = .12;
+    pctx.fillStyle = '#00d4ff';
+    pctx.fillRect(0, pc.height-2, pc.width, 2);
+    pctx.globalAlpha = 1;
+
+    if (document.getElementById('portfolio-screen').classList.contains('active')) {
+      portRaf = requestAnimationFrame(portLoop);
+    }
+  }
+  portLoop();
+}
+
 // ════════════════════════════════════════════════════════════
 //  MATCH SETUP
 // ════════════════════════════════════════════════════════════
@@ -323,13 +670,13 @@ function startMatch() {
   }, 1000);
   requestAnimationFrame(gameLoop);
 }
- 
+
 function mkP(x, fy, data, dir) {
   return { x, fy, y:fy, data, dir, hp:100, sp:0, vy:0,
     jumping:false, blocking:false, state:'idle', stateTimer:0,
     frame:0, hitStun:0, lastPunch:0, lastKick:0, lastProj:0, lastSpecial:0 };
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  GAME LOOP
 // ════════════════════════════════════════════════════════════
@@ -346,7 +693,7 @@ function gameLoop() {
   }
   if (gameState === 'FIGHT' || gameState === 'END') { render(); requestAnimationFrame(gameLoop); }
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  INPUT / AI
 // ════════════════════════════════════════════════════════════
@@ -364,7 +711,7 @@ function inputP1() {
   if (keys['KeyL']&&p1.sp>=30 &&now-p1.lastProj>   600)      { p1.lastProj=now;    shootProj(p1); }
   if (keys['KeyI']&&p1.sp>=100&&now-p1.lastSpecial>1200)     { p1.lastSpecial=now; doSpecial(p1,p2); }
 }
- 
+
 function aiStep() {
   if (p2.hitStun>0) { p2.hitStun--; return; }
   if (p2.state==='punch'||p2.state==='kick'||p2.state==='special') return;
@@ -380,7 +727,7 @@ function aiStep() {
   }
   if (!p2.jumping&&Math.random()<.004) { p2.vy=-26; p2.jumping=true; }
 }
- 
+
 function physStep(p) {
   p.y += p.vy; p.vy += 1.6;
   if (p.y >= p.fy) { p.y=p.fy; p.jumping=false; p.vy=0; if(p.state==='jump') p.state='idle'; }
@@ -388,7 +735,7 @@ function physStep(p) {
   p.frame += 0.14;
   if (p.stateTimer>0) { p.stateTimer--; if(p.stateTimer===0&&(p.state==='punch'||p.state==='kick'||p.state==='special')) p.state='idle'; }
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  COMBAT
 // ════════════════════════════════════════════════════════════
@@ -413,20 +760,20 @@ function doAtk(a, t, type, dmg, spGain) {
     if (t.hp<=0) endMatch(a===p1);
   }
 }
- 
+
 function shootProj(p) {
   p.sp-=30; p.state='punch'; p.stateTimer=18;
   projs.push({x:p.x+p.dir*55, y:p.y-90, vx:p.dir*17, vy:0, owner:p, col:p.data.pal.AC, dmg:12});
   spawnHits(p.x, p.y-90, p.data.pal.AC, 12);
   setScreenFlash(p.data.spCol+'11', 0.03);
 }
- 
+
 function doSpecial(p, t) {
   p.state='special'; p.stateTimer=55; p.sp=0;
   setScreenFlash(p.data.spCol+'22', 0.025);
   p.data.doSpecial(p, t);
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  SPECIALS — DRAMATIC VISUAL VERSIONS
 // ════════════════════════════════════════════════════════════
@@ -445,7 +792,7 @@ function spHadouTriple(p, t) {
   shakeAmt=14;
   specialFX.push({type:'aura', owner:p, col:'#00d4ff', life:1.0, decay:0.025});
 }
- 
+
 function spMechaLaser(p, t) {
   // Buildup then beam
   shakeAmt=55;
@@ -468,7 +815,7 @@ function spMechaLaser(p, t) {
   if (t.hp<=0) endMatch(p===p1);
   specialFX.push({type:'beamGlow', owner:p, col:'#00ffff', life:1.0, decay:0.03});
 }
- 
+
 function spVoidStep(p, t) {
   // Vortex disappear
   for (let i=0;i<40;i++) spawnSpiralPart(p.x, p.y-90, '#cc44ff', '#ff00ff');
@@ -494,7 +841,7 @@ function spVoidStep(p, t) {
   }, 80);
   specialFX.push({type:'voidTrail', owner:p, col:'#cc44ff', life:1.0, decay:0.022});
 }
- 
+
 function spByteSlam(p, t) {
   setScreenFlash('#003300', 0.015);
   specialFX.push({type:'aura', owner:p, col:'#00ff44', life:1.0, decay:0.02});
@@ -521,7 +868,7 @@ function spByteSlam(p, t) {
     }
   }, 16);
 }
- 
+
 function spGelBurst(p, t) {
   setScreenFlash('#003344', 0.015);
   for (let i=0;i<7;i++) {
@@ -542,7 +889,7 @@ function spGelBurst(p, t) {
   }
   specialFX.push({type:'gelAura', owner:p, col:p.data.pal.AC, life:1.0, decay:0.018});
 }
- 
+
 function spLadyStorm(p, t) {
   setScreenFlash('#440022', 0.018);
   specialFX.push({type:'matrixBg', owner:p, col:'#ff88cc', life:1.0, decay:0.016});
@@ -556,7 +903,7 @@ function spLadyStorm(p, t) {
   }
   shakeAmt=22;
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  PARTICLE SYSTEMS
 // ════════════════════════════════════════════════════════════
@@ -585,7 +932,7 @@ function starBurstFX(x, y, col, n) {
       life:0.8, col, sz:PS*2, type:'star'});
   }
 }
- 
+
 function updateParts() {
   for (let i=parts.length-1;i>=0;i--) {
     const p=parts[i];
@@ -619,7 +966,7 @@ function updateProjs() {
     if (pr.x<-80||pr.x>canvas.width+80||pr.y>canvas.height+80) projs.splice(i,1);
   }
 }
- 
+
 // ── HIT NUMBERS ─────────────────────────────────────────────
 function spawnHitNum(x,y,val,blocked) { hitNums.push({x,y,val,blocked,life:1.0}); }
 function updateHitNums() {
@@ -628,7 +975,7 @@ function updateHitNums() {
     if (hitNums[i].life<=0) hitNums.splice(i,1);
   }
 }
- 
+
 // ── FLASH FX ────────────────────────────────────────────────
 function addFlash(x,y,col,r) { flashFX.push({type:'impact',x,y,col,life:1.0,r}); }
 function updateFlash() {
@@ -638,7 +985,7 @@ function updateFlash() {
     if (flashFX[i].life<=0) flashFX.splice(i,1);
   }
 }
- 
+
 // ── SHOCKWAVES ───────────────────────────────────────────────
 function addShockwave(x,y,col,maxR,alpha) { shockwaves.push({x,y,r:0,maxR,col,alpha,w:PS*2}); }
 function updateShockwaves() {
@@ -648,7 +995,7 @@ function updateShockwaves() {
     if (sw.alpha<=0||sw.r>=sw.maxR) shockwaves.splice(i,1);
   }
 }
- 
+
 // ── AFTERIMAGES ──────────────────────────────────────────────
 function spawnAfterimage(p) {
   if ((p.state==='punch'||p.state==='kick') && globalFrame%3===0) {
@@ -662,7 +1009,7 @@ function updateAfterimages() {
     if (afterimages[i].alpha<=0) afterimages.splice(i,1);
   }
 }
- 
+
 // ── SPECIAL FX SYSTEM ────────────────────────────────────────
 function updateSpecialFX() {
   for (let i=specialFX.length-1;i>=0;i--) {
@@ -670,16 +1017,16 @@ function updateSpecialFX() {
     if (specialFX[i].life<=0) specialFX.splice(i,1);
   }
 }
- 
+
 // ── SCREEN FLASH ─────────────────────────────────────────────
 function setScreenFlash(col, decay) { screenFlash={col, a:1.0, decay}; }
- 
+
 // ── SHAKE ────────────────────────────────────────────────────
 function tickShake() {
   if (shakeAmt>.5) { shakeAmt*=.74; shakeX=(Math.random()-.5)*shakeAmt*2; shakeY=(Math.random()-.5)*shakeAmt*2; }
   else { shakeAmt=shakeX=shakeY=0; }
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  END MATCH
 // ════════════════════════════════════════════════════════════
@@ -700,7 +1047,7 @@ function endMatch(p1Wins) {
     document.getElementById('btn-portfolio').style.display=won?'inline-block':'none';
   }, 2800);
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  RENDER
 // ════════════════════════════════════════════════════════════
@@ -708,41 +1055,41 @@ function render() {
   tickShake();
   ctx.save();
   ctx.translate(snap(shakeX), snap(shakeY));
- 
+
   drawStageBg();
- 
+
   // Special FX backgrounds
   for (const fx of specialFX) {
     if (fx.type==='matrixBg') renderMatrixBg(fx);
   }
- 
+
   // Particles (behind fighters)
   renderParticles();
- 
+
   // Afterimages (behind fighters)
   for (const ai of afterimages) renderAfterimage(ai);
- 
+
   // Shadows + fighters
   drawShadow(p1); drawShadow(p2);
   drawSprite(p1); drawSprite(p2);
- 
+
   // Special aura overlay
   for (const fx of specialFX) {
     if (fx.type==='aura'||fx.type==='voidTrail'||fx.type==='gelAura'||fx.type==='beamGlow') renderSpecialAura(fx);
   }
- 
+
   // Projectiles
   renderProjectiles();
- 
+
   // Shockwaves
   renderShockwaves();
- 
+
   // Flash FX
   renderFlashFX();
- 
+
   // Speed lines during attacks
   renderSpeedLines();
- 
+
   // Screen flash overlay
   if (screenFlash && screenFlash.a>0) {
     ctx.globalAlpha = screenFlash.a;
@@ -750,10 +1097,10 @@ function render() {
     ctx.fillRect(-20,-20,canvas.width+40,canvas.height+40);
     ctx.globalAlpha = 1;
   }
- 
+
   drawHUD();
   renderHitNums();
- 
+
   // KO text
   if (koText && koText.life>0) {
     koText.life -= 0.007;
@@ -769,10 +1116,10 @@ function render() {
     ctx.fillStyle=koText.won?'#ffcc00':'#666'; ctx.fillText(koText.text, canvas.width/2, sy);
     ctx.globalAlpha=1;
   }
- 
+
   ctx.restore();
 }
- 
+
 function renderParticles() {
   for (const p of parts) {
     ctx.globalAlpha = p.life;
@@ -793,7 +1140,7 @@ function renderParticles() {
   }
   ctx.globalAlpha=1;
 }
- 
+
 function renderProjectiles() {
   for (const pr of projs) {
     const r = pr.special ? PS*5 : PS*4;
@@ -811,7 +1158,7 @@ function renderProjectiles() {
     ctx.globalAlpha=1;
   }
 }
- 
+
 function renderShockwaves() {
   for (const sw of shockwaves) {
     ctx.globalAlpha=sw.alpha*0.7;
@@ -824,7 +1171,7 @@ function renderShockwaves() {
     ctx.globalAlpha=1; ctx.lineWidth=1;
   }
 }
- 
+
 function renderFlashFX() {
   for (const f of flashFX) {
     ctx.globalAlpha=f.life*0.6;
@@ -875,7 +1222,7 @@ function renderFlashFX() {
     ctx.globalAlpha=1;
   }
 }
- 
+
 function renderAfterimage(ai) {
   ctx.save();
   ctx.globalAlpha=ai.alpha;
@@ -896,9 +1243,9 @@ function renderAfterimage(ai) {
   }
   ctx.restore();
 }
- 
+
 function renderSpeedLines(){ /* speed lines drawn as part of sprite */}
- 
+
 function renderSpecialAura(fx) {
   const p=fx.owner, col=fx.col, a=fx.life;
   // Pulsing pixel ring around fighter
@@ -914,7 +1261,7 @@ function renderSpecialAura(fx) {
   }
   ctx.globalAlpha=1;
 }
- 
+
 function renderMatrixBg(fx) {
   ctx.globalAlpha=fx.life*0.18;
   const t=globalFrame;
@@ -925,7 +1272,7 @@ function renderMatrixBg(fx) {
   }
   ctx.globalAlpha=1;
 }
- 
+
 function renderHitNums() {
   for (const h of hitNums) {
     ctx.globalAlpha=h.life;
@@ -938,14 +1285,14 @@ function renderHitNums() {
     ctx.globalAlpha=1;
   }
 }
- 
+
 function drawShadow(p) {
   const sc=Math.max(.15, 1-Math.abs(p.y-p.fy)/280);
   ctx.globalAlpha=.35*sc;
   PX(ctx,'#000',p.x-snap(52*sc)/2, p.fy+6, snap(52*sc), snap(10*sc));
   ctx.globalAlpha=1;
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  STAGE BACKGROUND
 // ════════════════════════════════════════════════════════════
@@ -964,7 +1311,7 @@ function drawStageBg() {
   PX(ctx,st.accent+'66',0,fy,W,PS);
   ctx.fillStyle=st.floor; ctx.fillRect(0,fy+PS*6,W,H-fy-PS*6);
 }
- 
+
 function drawCityBg(W,H) {
   [[.08,.15,.05,.6],[.18,.08,.04,.67],[.65,.12,.06,.63],[.82,.06,.04,.69]].forEach(([x,y,w,h])=>{
     PX(ctx,'#050515',W*x,H*y,W*w,H*h);
@@ -1030,7 +1377,7 @@ function drawSewerBg(W,H) {
   PX(ctx,'#00ff44',0,H-200,W,60);
   ctx.globalAlpha=1;
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  HUD
 // ════════════════════════════════════════════════════════════
@@ -1066,7 +1413,7 @@ function drawHPBar(p,x,y,dir) {
   ctx.fillStyle='#000'; ctx.fillText(p.data.name,bx+(dir===1?3:bw-1),y-5);
   ctx.fillStyle='#fff'; ctx.fillText(p.data.name,bx+(dir===1?2:bw-2),y-6);
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  SPRITES — pixel art, sub-frame attack animation
 //  stateTimer counts DOWN: high = wind-up, mid = strike, low = recovery
@@ -1093,7 +1440,7 @@ function drawSprite(p) {
   }
   ctx.restore();
 }
- 
+
 // ── JAVA-RYU ─────────────────────────────────────────────────
 function sprJavaRyu(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*3:PS*3):0, lR=-lL;
@@ -1109,7 +1456,7 @@ function sprJavaRyu(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.BT,-PS*5,-PS*38+bob,PS*10,PS*2);
   Q(K.EY,-PS*3,-PS*35+bob,PS*2,PS*2); Q(K.EY,PS*2,-PS*35+bob,PS*2,PS*2);
   Q(K.Sk,-PS*4,-PS*31+bob,PS*8,PS);
- 
+
   if (P2) {
     // Wind-up: pt>.6 arm pulled back. Strike: pt<.6 fully extended
     const ext = pt > .6 ? -PS*4 : PS*18; // arm extension
@@ -1152,7 +1499,7 @@ function sprJavaRyu(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.GI, PS*7,-PS*30+bob, PS*5,PS*12); Q(K.SK, PS*7,-PS*28+bob, PS*4,PS*10);
   }
 }
- 
+
 // ── MECHA-X ───────────────────────────────────────────────────
 function sprMechaX(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*3:PS*3):0, lR=-lL;
@@ -1168,7 +1515,7 @@ function sprMechaX(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.bt,-PS*5,-PS*40+bob,PS*11,PS*6); Q(K.BT,-PS*4,-PS*39+bob,PS*9,PS*4);
   Q(K.HR,-PS*7,-PS*44+bob,PS*15,PS*3);
   Q(K.WH,PS*4,-PS*47+bob,PS*2,PS*5); Q(K.BT,PS*3,-PS*50+bob,PS*4,PS*4);
- 
+
   if (P2) {
     const ext=pt>.6?-PS*4:PS*20;
     Q(K.Gi,-PS*14,-PS*28+bob,PS*6,PS*6);
@@ -1189,7 +1536,7 @@ function sprMechaX(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.Gi,-PS*14,-PS*30+bob,PS*6,PS*14); Q(K.Gi,PS*9,-PS*30+bob,PS*6,PS*14);
   }
 }
- 
+
 // ── VOID-GAIDEN ───────────────────────────────────────────────
 function sprVoidGaiden(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*3:PS*3):0, lR=-lL;
@@ -1203,7 +1550,7 @@ function sprVoidGaiden(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.GI,-PS*5,-PS*41+bob,PS*10,PS*7);
   Q(K.BT,-PS*4,-PS*37+bob,PS*8,PS*3); Q(K.WH,-PS*3,-PS*36+bob,PS*6,PS);
   Q(K.HR,-PS*5,-PS*42+bob,PS*10,PS*4); Q(K.BT,-PS*5,-PS*42+bob,PS*10,PS*2);
- 
+
   if (P2) {
     const ext=pt>.6?-PS*6:PS*19;
     Q(K.SK,-PS*10,-PS*28+bob,PS*5,PS*4);
@@ -1229,7 +1576,7 @@ function sprVoidGaiden(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.SK,-PS*10,-PS*29+bob,PS*5,PS*12); Q(K.SK,PS*6,-PS*29+bob,PS*5,PS*12);
   }
 }
- 
+
 // ── BYTE-BEAST ────────────────────────────────────────────────
 function sprByteBeast(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*4:PS*4):0, lR=-lL;
@@ -1247,7 +1594,7 @@ function sprByteBeast(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.BT,-PS*5,-PS*44+bob,PS*2,PS*2); Q(K.BT,PS*4,-PS*44+bob,PS*2,PS*2);
   Q(K.WH,-PS*7,-PS*38+bob,PS*3,PS*7); Q(K.WH,PS*5,-PS*38+bob,PS*3,PS*7);
   Q(K.HR,-PS*4,-PS*37+bob,PS*9,PS*3);
- 
+
   if (P2) {
     const ext=pt>.6?-PS*4:PS*22;
     Q(K.SK,-PS*17,-PS*32+bob,PS*7,PS*8);
@@ -1267,7 +1614,7 @@ function sprByteBeast(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.SK,-PS*17,-PS*34+bob,PS*7,PS*15); Q(K.SK,PS*11,-PS*34+bob,PS*7,PS*15);
   }
 }
- 
+
 // ── GEL-OS ────────────────────────────────────────────────────
 function sprGelOS(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*2:PS*2):0, lR=-lL;
@@ -1285,7 +1632,7 @@ function sprGelOS(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.WH,-PS*3,-PS*36+bob,PS*2,PS*2); Q(K.WH,PS*3,-PS*36+bob,PS*2,PS*2);
   Q(K.BO,-PS*2,-PS*32+bob,PS*5,PS*2);
   Q(K.WH,-PS*2,-PS*41+bob,PS*5,PS*2);
- 
+
   if (P2) {
     const ext=pt>.6?-PS*3:PS*13;
     Q(K.GI,-PS*11,-PS*24+bob,PS*4,PS*5);
@@ -1304,7 +1651,7 @@ function sprGelOS(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.GI,-PS*12,-PS*25+bob,PS*4,PS*10); Q(K.GI,PS*9,-PS*25+bob,PS*4,PS*10);
   }
 }
- 
+
 // ── LADY-LOGIC ────────────────────────────────────────────────
 function sprLadyLogic(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   const lL=W?(wf?-PS*2:PS*2):0, lR=-lL;
@@ -1320,7 +1667,7 @@ function sprLadyLogic(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
   Q(K.HR,-PS*5,-PS*44+bob,PS*10,PS*5); Q(K.HR,-PS*5,-PS*41+bob,PS*3,PS*8); Q(K.HR,PS*3,-PS*41+bob,PS*3,PS*8);
   Q(K.EY,-PS*2,-PS*38+bob,PS*2,PS*2); Q(K.EY,PS,-PS*38+bob,PS*2,PS*2);
   Q(K.AC,-PS*2,-PS*35+bob,PS*5,PS*2); Q(K.AC,-PS*3,-PS*33+bob,PS*7,PS*2);
- 
+
   if (P2) {
     const ext=pt>.6?-PS*3:PS*18;
     Q(K.SK,-PS*10,-PS*31+bob,PS*5,PS*4);
@@ -1340,7 +1687,7 @@ function sprLadyLogic(K,bob,wf,W,P2,K2,SP,BL,pt,kt) {
     Q(K.SK,-PS*10,-PS*32+bob,PS*5,PS*11); Q(K.SK,PS*6,-PS*32+bob,PS*5,PS*11);
   }
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  PREVIEW SPRITES
 // ════════════════════════════════════════════════════════════
@@ -1409,7 +1756,7 @@ function drawPreviewSprite(c, f, x, y, dir, frame) {
   }
   c.restore();
 }
- 
+
 // ── STAGE PREVIEW ───────────────────────────────────────────
 function drawStagePreview(c,s,w,h) {
   const bh=Math.ceil(h/s.bg.length);
@@ -1423,7 +1770,7 @@ function drawStagePreview(c,s,w,h) {
   if(s.type==='volcano'){c.fillStyle='#ff440033';c.fillRect(w*.35,h*.3,w*.3,h*.5);}
   if(s.type==='sewer'){c.fillStyle='#00ff4033';c.fillRect(w*.1,0,8,h*.7);c.fillRect(w*.7,0,8,h*.7);}
 }
- 
+
 // ════════════════════════════════════════════════════════════
 //  START SCREEN
 // ════════════════════════════════════════════════════════════
